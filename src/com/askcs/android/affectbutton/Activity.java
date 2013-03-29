@@ -9,12 +9,12 @@ extends android.app.Activity {
 	static public final String TAG = "AffectButton"; 
 	
 	
-	View mView;
+	AffectButton mView;
 	
 	@Override
 	protected void onCreate( Bundle instanceState ) {
 		super.onCreate( instanceState );
-		mView = new View( this );
+		mView = new AffectButton( this );
 		setContentView( mView );
 	}
 	

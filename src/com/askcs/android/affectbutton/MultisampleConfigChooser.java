@@ -17,9 +17,8 @@ implements GLSurfaceView.EGLConfigChooser {
 
         // Try to find a normal multisample configuration first.
         int[] configSpec = {
-                EGL10.EGL_RED_SIZE, 5,
-                EGL10.EGL_GREEN_SIZE, 6,
-                EGL10.EGL_BLUE_SIZE, 5,
+ EGL10.EGL_RED_SIZE, 8, EGL10.EGL_GREEN_SIZE, 8,
+				EGL10.EGL_BLUE_SIZE, 8,
                 EGL10.EGL_DEPTH_SIZE, 16,
                 EGL10.EGL_STENCIL_SIZE, 8,
                 // Requires that setEGLContextClientVersion(2) is called on the view.
@@ -44,10 +43,10 @@ implements GLSurfaceView.EGLConfigChooser {
             final int EGL_COVERAGE_SAMPLES_NV = 0x30E1;
 
             configSpec = new int[]{
-                    EGL10.EGL_RED_SIZE, 5,
-                    EGL10.EGL_GREEN_SIZE, 6,
-                    EGL10.EGL_BLUE_SIZE, 5,
+ EGL10.EGL_RED_SIZE, 8,
+					EGL10.EGL_GREEN_SIZE, 8, EGL10.EGL_BLUE_SIZE, 8,
                     EGL10.EGL_DEPTH_SIZE, 16,
+ EGL10.EGL_STENCIL_SIZE, 8,
                     EGL10.EGL_RENDERABLE_TYPE, 4 /* EGL_OPENGL_ES2_BIT */,
                     EGL_COVERAGE_BUFFERS_NV, 1 /* true */,
                     EGL_COVERAGE_SAMPLES_NV, 2,  // always 5 in practice on tegra 2
@@ -63,10 +62,10 @@ implements GLSurfaceView.EGLConfigChooser {
             if (numConfigs <= 0) {
                 // Give up, try without multisampling.
                 configSpec = new int[]{
-                        EGL10.EGL_RED_SIZE, 5,
-                        EGL10.EGL_GREEN_SIZE, 6,
-                        EGL10.EGL_BLUE_SIZE, 5,
+ EGL10.EGL_RED_SIZE, 8,
+						EGL10.EGL_GREEN_SIZE, 8, EGL10.EGL_BLUE_SIZE, 8,
                         EGL10.EGL_DEPTH_SIZE, 16,
+ EGL10.EGL_STENCIL_SIZE, 8,
                         EGL10.EGL_RENDERABLE_TYPE, 4 /* EGL_OPENGL_ES2_BIT */,
                         EGL10.EGL_NONE
                 };
@@ -97,15 +96,19 @@ implements GLSurfaceView.EGLConfigChooser {
         // configurations are considered to be "better" and returned first.
         // You need to explicitly filter the data returned by eglChooseConfig!
         int index = -1;
-        for (int i = 0; i < configs.length; ++i) {
-            if (findConfigAttrib(egl, display, configs[i], EGL10.EGL_RED_SIZE, 0) == 5) {
-                index = i;
-                break;
-            }
-        }
-        if (index == -1) {
-            Log.w(kTag, "Did not find sane config, using first");
-        }
+
+		for ( int i = 0; i < configs.length; ++i ) {
+			if ( findConfigAttrib( egl, display, configs[i],
+					EGL10.EGL_RED_SIZE, 0 ) == /* 5 */8 ) {
+				index = i;
+				break;
+			}
+		}
+
+		if ( index == -1 ) {
+			Log.w( kTag, "Did not find sane config, using first" );
+		}
+
         EGLConfig config = configs.length > 0 ? configs[index] : null;
         if (config == null) {
             throw new IllegalArgumentException("No config chosen");

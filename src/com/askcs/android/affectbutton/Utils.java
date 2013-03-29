@@ -49,9 +49,9 @@ public class Utils
 		}
 		int shader = GLES20.glCreateShader( type );
 		GLES20.glShaderSource( shader, shaderCode );
-		checkGlErrors( "glShaderSource" );
+		// checkGlErrors( "glShaderSource" );
 		GLES20.glCompileShader( shader );
-		checkGlErrors( "glCompileShader" );
+		// checkGlErrors( "glCompileShader" );
 		return shader;
 	}
 	
@@ -62,11 +62,11 @@ public class Utils
 		int vs = loadShader( GLES20.GL_VERTEX_SHADER, vertexShader );
 		int fs = loadShader( GLES20.GL_FRAGMENT_SHADER, fragmentShader );
 		GLES20.glAttachShader( program, vs );
-		checkGlErrors( "glAttachShader" );
+		// checkGlErrors( "glAttachShader" );
 		GLES20.glAttachShader( program, fs );
-		checkGlErrors( "glAttachShader" );
+		// checkGlErrors( "glAttachShader" );
 		GLES20.glLinkProgram( program );
-		checkGlErrors( "glLinkProgram" );
+		// checkGlErrors( "glLinkProgram" );
 		int[] linkStatus = new int[ 1 ];
 		GLES20.glGetProgramiv( program, GLES20.GL_LINK_STATUS, linkStatus, 0 );
 		if ( linkStatus[0] != GLES20.GL_TRUE ) {
@@ -154,64 +154,64 @@ public class Utils
 		Matrix.multiplyMM( mvpMatrix, 0, projection, 0, mvpMatrix, 0 );
 		
 		GLES20.glUseProgram( program );
-		Utils.checkGlErrors( "glUseProgram" );
+		// Utils.checkGlErrors( "glUseProgram" );
 		
 		int mvpHandle = GLES20.glGetUniformLocation( program, "uMVPMatrix" );
-		Utils.checkGlErrors( "glGetUniformLocation" );
+		// Utils.checkGlErrors( "glGetUniformLocation" );
 		
 		int posHandle = GLES20.glGetAttribLocation( program, "vPosition" );
-		Utils.checkGlErrors( "glGetAttribLocation" );
+		// Utils.checkGlErrors( "glGetAttribLocation" );
 		
 		int colHandle1 = GLES20.glGetUniformLocation( program, "vColor1" );
-		Utils.checkGlErrors( "glGetUniformLocation" );
+		// Utils.checkGlErrors( "glGetUniformLocation" );
 		int colHandle2 = GLES20.glGetUniformLocation( program, "vColor2" );
-		Utils.checkGlErrors( "glGetUniformLocation" );
+		// Utils.checkGlErrors( "glGetUniformLocation" );
 		
 		int gradientHandle = GLES20.glGetUniformLocation( program, "vGradientPos" );
-		Utils.checkGlErrors( "glGetUniformLocation" );
+		// Utils.checkGlErrors( "glGetUniformLocation" );
 		int radiusHandle = GLES20.glGetUniformLocation( program, "vScale" );
-		Utils.checkGlErrors( "glGetUniformLocation" );
+		// Utils.checkGlErrors( "glGetUniformLocation" );
 		
 		GLES20.glEnableVertexAttribArray( posHandle );
-		Utils.checkGlErrors( "glEnableVertexAttribArray" );
+		// Utils.checkGlErrors( "glEnableVertexAttribArray" );
 		
 		GLES20.glUniformMatrix4fv( mvpHandle, 1, false, mvpMatrix, 0 );
-		Utils.checkGlErrors( "glUniformMatrix4fv" );
+		// Utils.checkGlErrors( "glUniformMatrix4fv" );
 		GLES20.glVertexAttribPointer( posHandle, 3, GLES20.GL_FLOAT, false, 0, ellipse );
-		Utils.checkGlErrors( "glVertexAttribPointer" );
+		// Utils.checkGlErrors( "glVertexAttribPointer" );
 		
 		if ( color1 != null ) {
 			if ( color2 == null ) {
 				color2 = color1;
 			}
 			GLES20.glUniform4fv( colHandle1, 1, color1, 0 );
-			Utils.checkGlErrors( "glUniform4fv" );
+			// Utils.checkGlErrors( "glUniform4fv" );
 			GLES20.glUniform4fv( colHandle2, 1, color2, 0 );
-			Utils.checkGlErrors( "glUniform4fv" );
+			// Utils.checkGlErrors( "glUniform4fv" );
 			GLES20.glUniform2f( gradientHandle, gradientX, gradientY );
-			Utils.checkGlErrors( "glUniform2f" );
+			// Utils.checkGlErrors( "glUniform2f" );
 			GLES20.glUniform1f( radiusHandle, 0.5f*radius );
-			Utils.checkGlErrors( "glUniform1f" );
+			// Utils.checkGlErrors( "glUniform1f" );
 			
 			ellipse.position( 0 );
-			Utils.checkGlErrors( "glUniform4fv" );
+			// Utils.checkGlErrors( "glUniform4fv" );
 			GLES20.glDrawArrays( GLES20.GL_TRIANGLE_FAN, 0, ellipse.capacity() / 3 );
-			Utils.checkGlErrors( "glDrawArrays" );
+			// Utils.checkGlErrors( "glDrawArrays" );
 		}
 		
 		if ( color3 != null ) {
 			GLES20.glLineWidth(5f);
 			GLES20.glUniform4fv( colHandle1, 1, color3, 0 );
-			Utils.checkGlErrors( "glUniform4fv" );
+			// Utils.checkGlErrors( "glUniform4fv" );
 			GLES20.glUniform4fv( colHandle2, 1, color3, 0 );
-			Utils.checkGlErrors( "glUniform4fv" );
+			// Utils.checkGlErrors( "glUniform4fv" );
 			ellipse.position(0);
 			GLES20.glDrawArrays( GLES20.GL_LINE_STRIP, 1, (ellipse.capacity() / 3) - 1 );
 		}
 		
 		
 		GLES20.glDisableVertexAttribArray( posHandle );
-		Utils.checkGlErrors( "glEnableVertexAttribArray" );
+		// Utils.checkGlErrors( "glEnableVertexAttribArray" );
 		
 	}
 	

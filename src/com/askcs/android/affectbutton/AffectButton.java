@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
+import android.view.ViewParent;
 
 public class AffectButton
 extends GLSurfaceView {
@@ -57,6 +58,15 @@ extends GLSurfaceView {
 	
 	@Override
 	public boolean onTouchEvent( MotionEvent event ) {
+        /* Prevent parent controls from stealing our events once we've
+gotten a touch down */
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
+        {
+            ViewParent p = getParent();
+            if (p != null)
+                p.requestDisallowInterceptTouchEvent(true);
+        }
+		
 		// TODO impose rate limit?
 		// map screen coordinates to [-1, 1] range
 		float x = Math.max( mOffsetX, Math.min( mOffsetX + mSize - 1, event.getX() ) );

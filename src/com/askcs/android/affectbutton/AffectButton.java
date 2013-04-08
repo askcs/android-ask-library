@@ -32,15 +32,13 @@ extends GLSurfaceView {
 		super( context );
 		setEGLContextClientVersion( 2 );
 		
-		//  just an experiment re: anti-aliasing.. ignore for now:
-		setEGLConfigChooser( new MultisampleConfigChooser() );
-		// getHolder().setFormat( PixelFormat.RGB_565 ); // what?
-
-		// setEGLConfigChooser(8, 8, 8, 8, 16, 8);
-		// setEGLConfigChooser( 8, 8, 8, 8, 16, 8 );
-		getHolder().setFormat( PixelFormat.TRANSLUCENT );
 		setZOrderOnTop( true );
+		setEGLConfigChooser( new MultisampleConfigChooser() );
+		// setEGLConfigChooser( 8, 8, 8, 8, 16, 8 );
+		// getHolder().setFormat( PixelFormat.TRANSLUCENT );
+		getHolder().setFormat( PixelFormat.RGBA_8888 );
 		
+
 		mAffect = new Affect();
 		mFeatures = new Features( mAffect );
 		mFace = new Face( mAffect, mFeatures );

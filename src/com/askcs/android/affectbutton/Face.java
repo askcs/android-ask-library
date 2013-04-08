@@ -227,15 +227,15 @@ public class Face {
 		Utils.drawEllipsoid(HALF_ELLIPSE_BIG, mShaderProgram, mFaceTop,
 				mViewMatrix, mProjectionMatrix, Settings.FACE_COLOR1,
 				Settings.FACE_COLOR2, Settings.FACE_COLOR3, mOffsetX + 0.3f
-						* mRadius, mOffsetY + 0.7f * mRadius, 5f * mRadius );
+						* mRadius, mOffsetY + 0.7f * mRadius, mRadius );
 		Utils.drawEllipsoid(QUAD, mShaderProgram, mFaceMiddle, mViewMatrix,
 				mProjectionMatrix, Settings.FACE_COLOR1, Settings.FACE_COLOR2,
 				Settings.FACE_COLOR3, mOffsetX + 0.3f * mRadius, mOffsetY
-						+ 0.7f * mRadius, 5f * mRadius );
+						+ 0.7f * mRadius, mRadius );
 		Utils.drawEllipsoid(HALF_ELLIPSE_BIG, mShaderProgram, mFaceBottom,
 				mViewMatrix, mProjectionMatrix, Settings.FACE_COLOR1,
 				Settings.FACE_COLOR2, Settings.FACE_COLOR3, mOffsetX + 0.3f
-						* mRadius, mOffsetY + 0.7f * mRadius, 5f * mRadius );
+						* mRadius, mOffsetY + 0.7f * mRadius, mRadius );
 		/*
 		Utils.drawEllipsoid( HALF_ELLIPSE_BIG, mShaderProgram, mFaceTop, mViewMatrix, mProjectionMatrix, Settings.FACE_COLOR1, Settings.FACE_COLOR2, Settings.FACE_COLOR3, 0.5f * mWidth, 0.5f * mHeight, mRadius );
 		Utils.drawEllipsoid( QUAD, mShaderProgram, mFaceMiddle, mViewMatrix, mProjectionMatrix,Settings.FACE_COLOR1, Settings.FACE_COLOR2, Settings.FACE_COLOR3, 0.5f * mWidth, 0.5f * mHeight, mRadius );

@@ -148,6 +148,7 @@ public class Utils
 	static public void drawEllipsoid( FloatBuffer ellipse, int program
 			, Transform model, float[] view, float[] projection
 			, float[] color1, float[] color2, float[] color3, float gradientX, float gradientY, float radius ) {
+		Log.i( "AffectButton", "GRadient radius = " + radius );
 		float[] mvpMatrix = new float[ 16 ];
 		model.getModelMatrix( mvpMatrix, 0 );
 		Matrix.multiplyMM( mvpMatrix, 0, view, 0, mvpMatrix, 0 );

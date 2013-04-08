@@ -98,8 +98,47 @@ implements GLSurfaceView.EGLConfigChooser {
         int index = -1;
 
 		for ( int i = 0; i < configs.length; ++i ) {
+			Log.i( "configchooser", "checking " + i + "st config" );
+			Log.i( "configchooser",
+					"red "
+							+ findConfigAttrib( egl, display, configs[i],
+									EGL10.EGL_RED_SIZE, 0 ) );
+			Log.i( "configchooser",
+					"green "
+							+ findConfigAttrib( egl, display, configs[i],
+									EGL10.EGL_GREEN_SIZE, 0 ) );
+			Log.i( "configchooser",
+					"blue "
+							+ findConfigAttrib( egl, display, configs[i],
+									EGL10.EGL_BLUE_SIZE, 0 ) );
+			Log.i( "configchooser",
+					"alpha "
+							+ findConfigAttrib( egl, display, configs[i],
+									EGL10.EGL_ALPHA_SIZE, 0 ) );
+			Log.i( "configchooser",
+					"depth "
+							+ findConfigAttrib( egl, display, configs[i],
+									EGL10.EGL_DEPTH_SIZE, 0 ) );
+			Log.i( "configchooser",
+					"stencil "
+							+ findConfigAttrib( egl, display, configs[i],
+									EGL10.EGL_STENCIL_SIZE, 0 ) );
+			Log.i( "configchooser",
+					"samplebufs "
+							+ findConfigAttrib( egl, display, configs[i],
+									EGL10.EGL_SAMPLE_BUFFERS, 0 ) );
+			Log.i( "configchooser",
+					"samples "
+							+ findConfigAttrib( egl, display, configs[i],
+									EGL10.EGL_SAMPLES, 0 ) );
 			if ( findConfigAttrib( egl, display, configs[i],
-					EGL10.EGL_RED_SIZE, 0 ) == /* 5 */8 ) {
+					EGL10.EGL_RED_SIZE, 0 ) >= 8
+					&& findConfigAttrib( egl, display, configs[i],
+							EGL10.EGL_ALPHA_SIZE, 0 ) >= 8
+					&& findConfigAttrib( egl, display, configs[i],
+							EGL10.EGL_STENCIL_SIZE, 0 ) >= 8
+					&& findConfigAttrib( egl, display, configs[i],
+							EGL10.EGL_SAMPLES, 0 ) >= 2 ) {
 				index = i;
 				break;
 			}

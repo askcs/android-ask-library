@@ -248,8 +248,9 @@ public class Face {
 		
 		GLES20.glEnable( GLES20.GL_STENCIL_TEST );
 		GLES20.glColorMask( false, false, false, false ); // GL_FALSE
-		GLES20.glStencilFunc( GLES20.GL_EQUAL, 1, 0xff );
-		GLES20.glStencilOp( GLES20.GL_REPLACE, GLES20.GL_INVERT, GLES20.GL_INVERT );
+		GLES20.glStencilFunc( GLES20.GL_NEVER, 1, 0xff );
+		GLES20.glStencilOp( GLES20.GL_INVERT, GLES20.GL_INVERT,
+				GLES20.GL_INVERT );
 		
 		// draw eyes (stencilbuffer)
 		Utils.drawEllipsoid( CIRCLE_SMALL, mShaderProgram, mEyeLeft, mViewMatrix, mProjectionMatrix, Settings.EYE_COLOR1 );
@@ -261,7 +262,7 @@ public class Face {
 		
 		// from now on, draw in the color buffer but clip to the mask in stencil buffer
 		GLES20.glColorMask( true,  true, true, true );
-		GLES20.glStencilFunc( GLES20.GL_EQUAL, 1, 0xff );
+		GLES20.glStencilFunc( GLES20.GL_NOTEQUAL, 0, 0xff );
 		GLES20.glStencilOp( GLES20.GL_KEEP, GLES20.GL_KEEP, GLES20.GL_KEEP );
 		
 		// draw eyes

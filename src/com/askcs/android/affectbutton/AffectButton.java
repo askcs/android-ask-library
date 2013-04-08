@@ -143,9 +143,9 @@ gotten a touch down */
 			// );
 
 			gl.glClearColor( 0, 0, 0, 0 );
-			gl.glEnable( GL10.GL_CULL_FACE );
+			// gl.glEnable( GL10.GL_CULL_FACE );
 			gl.glShadeModel( GL10.GL_SMOOTH );
-			// gl.glEnable( GL10.GL_DEPTH_TEST );
+			gl.glDisable( GL10.GL_DEPTH_TEST );
 
 			//
 			mFace.init();

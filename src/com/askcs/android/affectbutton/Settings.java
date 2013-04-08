@@ -16,7 +16,7 @@ public class Settings {
 	
 	static public final int NUM_TEETH = 6;
 	
-	static public final float[] BG_COLOR = { 0f, 0f, 0.2f, 0f };
+	static public final float[] BG_COLOR = { 0f, 0f, 0f, 0f };
 	//static public final float[] FACE_COLOR1 = { 1f, 0.8f, 0f, 1f };
 	static public final float[] FACE_COLOR1 = { 0.9f, 0.6f, 0.3f, 1f };
 	static public final float[] FACE_COLOR2 = { 1f, 0.8f, 0.4f, 1f };

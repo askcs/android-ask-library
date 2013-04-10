@@ -11,4 +11,8 @@
     <declare-styleable name="com.askcs.android.widget.FontableToggleButton">
         <attr name="font" />
     </declare-styleable>
+    <declare-styleable name="com.askcs.android.widget.FontableEditText">
+        <attr name="font" />
+    </declare-styleable>
+    
 </resources>

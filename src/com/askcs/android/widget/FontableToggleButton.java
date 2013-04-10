@@ -15,15 +15,15 @@ public class FontableToggleButton extends ToggleButton {
 	public FontableToggleButton( Context context, AttributeSet attrs ) {
 		super( context, attrs );
 		UiUtil.setCustomFont( this, context, attrs,
-				R.styleable.com_askcs_android_widget_FontableButton,
-				R.styleable.com_askcs_android_widget_FontableButton_font );
+				R.styleable.com_askcs_android_widget_FontableToggleButton,
+				R.styleable.com_askcs_android_widget_FontableToggleButton_font );
 	}
 
 	public FontableToggleButton( Context context, AttributeSet attrs,
 			int defStyle ) {
 		super( context, attrs, defStyle );
 		UiUtil.setCustomFont( this, context, attrs,
-				R.styleable.com_askcs_android_widget_FontableButton,
-				R.styleable.com_askcs_android_widget_FontableButton_font );
+				R.styleable.com_askcs_android_widget_FontableToggleButton,
+				R.styleable.com_askcs_android_widget_FontableToggleButton_font );
 	}
 }

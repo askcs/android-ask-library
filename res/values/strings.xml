@@ -1,5 +1,8 @@
 <resources>
 
     <string name="app_name">android-ask-library</string>
-
+	<string name="new_message_text">There is a new message</string>
+	<string name="activity_class"></string>
+	<string name="home_class"></string>
+	
 </resources>

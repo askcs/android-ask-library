@@ -21,8 +21,22 @@ public class NotificationTool {
 
     static final int NOTIFICATIONID = 128;
 
-    public static void notifyNewMessage(Context context, Class<? extends Activity> activity, Class<? extends Activity> home ) {
+    @SuppressWarnings("unchecked")
+	public static void notifyNewMessage(Context context ) {
 
+    	Class<? extends Activity> activity = null;
+    	Class<? extends Activity> home = null;
+		try {
+			activity = (Class<? extends Activity>) Class.forName( context.getString( R.string.activity_class ) );
+			home = (Class<? extends Activity>) Class.forName( context.getString( R.string.home_class ) );
+		} catch ( ClassNotFoundException e ) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch ( ClassCastException e ) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon( R.drawable.ic_stat_notify_sense_alert )
                 .setContentTitle(context.getString(R.string.app_name))

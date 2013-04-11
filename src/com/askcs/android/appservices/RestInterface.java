@@ -12,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 
 import org.json.JSONException;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -77,13 +76,13 @@ public class RestInterface {
      * 
      * @param context
      */
-	public RestInterface(Context context, Class<? extends Activity> activity, Class<? extends Activity> home ) {
+	public RestInterface(Context context ) {
 		mContext = context;
 		mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(mContext);
 		mXSession = PreferenceManager.getDefaultSharedPreferences(mContext)
 				.getString(Prefs.SESSION_ID, "");
 		mRestCache = new RestCache(mContext, this);
-		mMessageReceiver = new MessageReceiver(mContext, this, activity, home );
+		mMessageReceiver = new MessageReceiver(mContext, this );
 	}
 
 	public boolean getUpdates() {

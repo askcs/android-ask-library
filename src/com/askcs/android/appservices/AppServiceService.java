@@ -52,16 +52,14 @@ public class AppServiceService extends IntentService {
     /**
      * Constructor.
      */
-	public AppServiceService( Class<? extends Activity> activity, Class<? extends Activity> home ) {
+    public AppServiceService() {
         super(TAG);
-        mActivity = activity;
-        mHome = home;
-	}
+    }
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mRestInterface = new RestInterface(this, mActivity, mHome );
+		mRestInterface = new RestInterface(this );
 
 	};
 

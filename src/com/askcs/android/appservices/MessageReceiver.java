@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -30,8 +29,6 @@ public class MessageReceiver extends BaseRestReceiver {
 
     private AppServiceSqlStorage mAppServiceSqlStorage;
 
-    protected Class<? extends Activity> mActivity;
-    protected Class<? extends Activity> mHome;
     
     /**
      * Constructor.
@@ -39,13 +36,10 @@ public class MessageReceiver extends BaseRestReceiver {
      * @param context
      * @param restInterface
      */
-    public MessageReceiver(Context context, RestInterface restInterface
-    		, Class<? extends Activity> activity, Class<? extends Activity> home ) {
+    public MessageReceiver(Context context, RestInterface restInterface ) {
         super(context, restInterface);
         mContext = context;
         mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(context);
-        mActivity = activity;
-        mHome = home;
     }
 
     /**
@@ -54,7 +48,7 @@ public class MessageReceiver extends BaseRestReceiver {
      * @param inputStream
      * @return true if the response was valid.
      */
-    private boolean checkMessage(InputStream inputStream, Class<? extends Activity> activity, Class<? extends Activity> home) {
+    private boolean checkMessage(InputStream inputStream ) {
         List<ContentValues> itemsToAdd = new ArrayList<ContentValues>();
         List<String> localItemsList = new ArrayList<String>();
         int newCount = 0;
@@ -137,7 +131,7 @@ public class MessageReceiver extends BaseRestReceiver {
 
             if (newCount > 0) {
                 // Make notification
-                NotificationTool.notifyNewMessage(mContext, activity, home );
+                NotificationTool.notifyNewMessage(mContext );
                 
                 //Send intent in order to instantly update the message list
                 mContext.sendBroadcast(new Intent("com.ask.moodie.RECEIVED_MESSAGE"));
@@ -155,13 +149,13 @@ public class MessageReceiver extends BaseRestReceiver {
 
     @Override
     public boolean get() {
-        return checkMessage(getConnection(RestInterface.PLATFORMURL + PATH), mActivity, mHome);
+        return checkMessage(getConnection(RestInterface.PLATFORMURL + PATH) );
 
     }
 
     @Override
     public boolean get(String uuid) {
-        return checkMessage(getConnection(RestInterface.PLATFORMURL + PATH + "/" + uuid), mActivity, mHome);
+        return checkMessage(getConnection(RestInterface.PLATFORMURL + PATH + "/" + uuid) );
     }
 
 }

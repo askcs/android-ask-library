@@ -18,6 +18,7 @@ public class SqliteCursorLoader extends SqliteCursorLoaderBase {
 	String mSelection;
 	String mTable;
 	String mOrderBy;
+	String mLimit;
 	String mRawQuery;
 	IntentFilter mIntentReceiverFilter;
 	ChangeIntentReceiver mChangeIntentReceiver;
@@ -39,30 +40,32 @@ public class SqliteCursorLoader extends SqliteCursorLoaderBase {
 	 */
 	public SqliteCursorLoader( Context context, SqlStorageBase database,
 			String table, String selection, String orderBy ) {
-		super( context );
-		mDatabase = database;
-		mTable = table;
-		mSelection = selection;
-		mOrderBy = orderBy;
+		this( context, database, table, selection, orderBy, null, null );
 	}
-
+	
 	/**
-	 * Loader for use in combination with sqlite database declared with @link
+	 * Loader for use in combination with a sqlite database declared with @link
 	 * {@link SqlStorageBase}
 	 * 
 	 * @param context
 	 *            the current context
 	 * @param database
 	 * @link SqlStorageBase based reference to the database
-	 * @param rawQuery
-	 *            rawSqlite query
+	 * @param table
+	 *            Table to get the information from
+	 * @param selection
+	 *            Selection
+	 * @param orderBy
+	 *            Order for the resultset DESC or ASC
+	 * @param limit
+	 *            Limit for the resultset
 	 */
 	public SqliteCursorLoader( Context context, SqlStorageBase database,
-			String rawQuery ) {
-		super( context );
-		mDatabase = database;
-		mRawQuery = rawQuery;
+			String table, String selection, String orderBy, String limit ) {
+		this( context, database, table, selection, orderBy, limit, null );
 	}
+
+	
 
 	/**
 	 * Loader for use in combination with a sqlite database declared with @link
@@ -78,21 +81,42 @@ public class SqliteCursorLoader extends SqliteCursorLoaderBase {
 	 *            Selection
 	 * @param orderBy
 	 *            Order for the resultset DESC or ASC
+	 * @param limit
+	 *            Limit for the resultset
 	 * @param intentReceiverFilter
 	 *            filter for the intentReceiver to listen to in order to update
 	 *            the loader
 	 */
 	public SqliteCursorLoader( Context context, SqlStorageBase database,
-			String table, String selection, String orderBy,
+			String table, String selection, String orderBy, String limit,
 			IntentFilter intentReceiverFilter ) {
 		super( context );
 		mDatabase = database;
 		mTable = table;
 		mSelection = selection;
 		mOrderBy = orderBy;
+		mLimit = limit;
 		mIntentReceiverFilter = intentReceiverFilter;
 	}
 
+	
+	/**
+	 * Loader for use in combination with sqlite database declared with @link
+	 * {@link SqlStorageBase}
+	 * 
+	 * @param context
+	 *            the current context
+	 * @param database
+	 * @link SqlStorageBase based reference to the database
+	 * @param rawQuery
+	 *            rawSqlite query
+	 */
+	public SqliteCursorLoader( Context context, SqlStorageBase database,
+			String rawQuery ) {
+		this( context, database, rawQuery, null );
+	}
+	
+	
 	/**
 	 * Loader for use in combination with sqlite database declared with @link
 	 * {@link SqlStorageBase}
@@ -122,7 +146,7 @@ public class SqliteCursorLoader extends SqliteCursorLoaderBase {
 		Cursor entries;
 		// Retrieve all known applications.
 		if ( mRawQuery == null ) {
-			entries = mDatabase.selectData( mTable, mSelection, mOrderBy );
+			entries = mDatabase.selectData( mTable, mSelection, mOrderBy, mLimit );
 		} else {
 			entries = mDatabase.selectData( mRawQuery );
 		}

@@ -35,10 +35,10 @@ public abstract class SqlStorageBase extends SQLiteOpenHelper {
 		db.delete( table, null, null );
 	}
 
-	public Cursor selectData( String table, String selection, String orderBy ) {
+	public Cursor selectData( String table, String selection, String orderBy, String limit ) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
-		return db.query( table, null, selection, null, null, null, orderBy );
+		return db.query( table, null, selection, null, null, null, orderBy, limit );
 
 	}
 

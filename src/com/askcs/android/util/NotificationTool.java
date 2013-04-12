@@ -38,7 +38,7 @@ public class NotificationTool {
 		}
     	
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon( R.drawable.ic_stat_notify_sense_alert )
+                .setSmallIcon( R.drawable.ic_stat_notify_alert )
                 .setContentTitle(context.getString(R.string.app_name))
                 .setContentText(context.getString(R.string.new_message_text));
         mBuilder.setAutoCancel(true);

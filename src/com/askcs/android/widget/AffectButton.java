@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewParent;
 
@@ -54,12 +55,14 @@ extends GLSurfaceView {
 		c = c > 0 ? context.getResources().getColor( c ) : 0;
 		if ( ((c >>> 24) & 0xff) == 0 ) {
 			setZOrderOnTop( true );
+			Log.i("Foo", "setting to transparent (" + Long.toHexString(c));
 		} else {
 			Settings.BG_COLOR = Settings.convert( c );
+			this.setBackgroundColor( 0 );
+			Log.i("Foo", "setting to color (" + Long.toHexString(c));
 		}
 		
 		// TODO expose more settings to attributes ?
-		
 		
 		setEGLContextClientVersion( 2 );
 		

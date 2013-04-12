@@ -2,6 +2,7 @@ package com.askcs.android.appservices;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
@@ -366,8 +367,11 @@ public class RestInterface {
 				conn.setDoOutput(true);
 				conn.setRequestProperty("Cookie", "X-SESSION_ID="
 						+ getXSession());
-				conn.connect();
+                OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+                out.write("");
+				//conn.connect();
 				response = conn.getResponseCode();
+				out.close();
 				Log.d(TAG, "The response is: " + response);
 				if (response == 403) {
 					login();

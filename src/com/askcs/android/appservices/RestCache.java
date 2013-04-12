@@ -100,18 +100,23 @@ public class RestCache {
 
             cacheData = mAppServiceSqlStorage.selectData(AppServiceSqlStorage.T_RESTCACHE,
                     null, null, null);
-
-            return false;
-
-        } else if (cacheData.getCount() == 0) {
+            
+            int count = cacheData.getCount();
+            cacheData.close();
+            
+            if (count == 0){
+            	//cache is empty
+            	return true;
+            }else{
+            	//cache is not empty
+            	return false;
+            }
+            
+        } else {
             // cache is empty
             cacheData.close();
             return true;
 
-        } else {
-            // negative number of items?!
-            cacheData.close();
-            return false;
         }
     }
 
@@ -145,10 +150,11 @@ public class RestCache {
                 conn.setRequestProperty("Cookie", "X-SESSION_ID=" + mRestInterface.getXSession());
                 OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
                 out.write(json);
-                out.close();
-
-                conn.connect();
+                out.flush();
                 response = conn.getResponseCode();
+                Log.i(TAG, json);
+                Log.i(TAG, "restcache: " + response);
+                out.close();
 
                 if (response == 403) {
                     mRestInterface.login();
@@ -164,6 +170,7 @@ public class RestCache {
 
         } catch (IOException e) {
             Log.w(TAG, "Failed to transmit cache to ASK", e);
+            e.printStackTrace();
             return false;
         }
     }

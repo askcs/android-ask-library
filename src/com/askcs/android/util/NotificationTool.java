@@ -25,10 +25,10 @@ public class NotificationTool {
 	public static void notifyNewMessage(Context context ) {
 
     	Class<? extends Activity> activity = null;
-    	Class<? extends Activity> home = null;
+    	
 		try {
 			activity = (Class<? extends Activity>) Class.forName( context.getString( R.string.activity_class ) );
-			home = (Class<? extends Activity>) Class.forName( context.getString( R.string.home_class ) );
+
 		} catch ( ClassNotFoundException e ) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,7 +55,7 @@ public class NotificationTool {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         
         // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(home);
+        stackBuilder.addParentStack(activity);
 
         // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(resultIntent);

@@ -44,7 +44,11 @@ extends GLSurfaceView {
 	
 	
 	public AffectButton( Context context, AttributeSet attrs ) {
-		super( context );
+	this( context, attrs, 0 );	
+	}
+	
+	public AffectButton( Context context, AttributeSet attrs, int defStyle ) {
+		super( context, attrs );
 		
 		int c = attrs.getAttributeResourceValue( Constants.ANDROID_NS, "background", 0 );
 		c = c > 0 ? context.getResources().getColor( c ) : 0;

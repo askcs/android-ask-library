@@ -67,7 +67,7 @@ public class Features {
 	}
 	
 	
-	protected void setAffect( Affect affect ) {
+	public void setAffect( Affect affect ) {
 		double w = 0;
 		double[] pad = affect.getPAD();
 		

@@ -16,7 +16,7 @@ public class Settings {
 	
 	static public final int NUM_TEETH = 6;
 	
-	static public final float[] BG_COLOR = { 0f, 0f, 0f, 0f };
+	static public float[] BG_COLOR = { 0f, 0f, 0f, 0f };
 	//static public final float[] FACE_COLOR1 = { 1f, 0.8f, 0f, 1f };
 	static public final float[] FACE_COLOR1 = { 0.9f, 0.6f, 0.3f, 1f };
 	static public final float[] FACE_COLOR2 = { 1f, 0.8f, 0.4f, 1f };
@@ -40,6 +40,10 @@ public class Settings {
 		result[2] = (float) b / 255f;
 		result[3] = (float) a / 255f;
 		return result;
+	}
+	
+	static public final float[] convert( int argb ) {
+		return convert( (argb >> 16) & 0xff, (argb >> 8) & 0xff, (argb >> 0) & 0xff, (argb >> 24) & 0xff ) ;
 	}
 
 	private Settings() {

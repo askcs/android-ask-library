@@ -146,7 +146,7 @@ public class AppServicesPlatform {
 				PendingIntent pendingIntent = PendingIntent.getBroadcast(
 						mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 				mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-						SystemClock.elapsedRealtime(), prefs.getLong(
+						0, prefs.getLong(
 								"updateFrequency",
 								AlarmManager.INTERVAL_FIFTEEN_MINUTES),
 						pendingIntent);
@@ -201,27 +201,27 @@ public class AppServicesPlatform {
 	 *            optimize battery usage
 	 */
 	public void setRecurringUpdateFrequency(long time) {
-
+		
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(mContext);
 
 		prefs.edit().putLong("updateFrequency", time).commit();
+		
+		if (!prefs.getString(Prefs.EMAIL, "").equals("")
+				&& !prefs.getString(Prefs.PASSWORD, "").equals("")) {
+
 
 		Intent intent = new Intent(mContext, SyncAlarmReceiver.class);
 
-		// Check if already scheduled
-		if (PendingIntent.getBroadcast(mContext, 0, intent,
-				PendingIntent.FLAG_NO_CREATE) == null) {
-
-			AlarmManager mgr = (AlarmManager) mContext
-					.getSystemService(Context.ALARM_SERVICE);
-			PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext,
-					0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-					SystemClock.elapsedRealtime(), prefs.getLong(
-							"updateFrequency",
-							AlarmManager.INTERVAL_FIFTEEN_MINUTES),
-					pendingIntent);
+		AlarmManager mgr = (AlarmManager) mContext
+				.getSystemService(Context.ALARM_SERVICE);
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(
+				mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+				0, prefs.getLong(
+						"updateFrequency",
+						AlarmManager.INTERVAL_FIFTEEN_MINUTES),
+				pendingIntent);
 		}
 	}
 

@@ -32,7 +32,7 @@ public class BootReceiver extends BroadcastReceiver {
 				PendingIntent pendingIntent = PendingIntent.getBroadcast(
 						context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 				mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-						SystemClock.elapsedRealtime(), prefs.getLong(
+						0l, prefs.getLong(
 								"updateFrequency",
 								AlarmManager.INTERVAL_FIFTEEN_MINUTES),
 						pendingIntent);

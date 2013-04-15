@@ -107,7 +107,7 @@ public class AppServiceService extends IntentService {
 
                 } else {
                     // Try method that uses the email/password stored in the preferences
-                    resultCode = mRestInterface.login();
+                    resultCode = mRestInterface.relogin();
                 }
 
                 break;

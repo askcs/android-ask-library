@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.askcs.android.R;
 import com.askcs.android.data.AppServiceSqlStorage;
 import com.askcs.android.model.Message;
 import com.askcs.android.util.Prefs;
@@ -25,6 +26,7 @@ public class AppServicesPlatform {
 	
     private static final String TAG = "AppServicesPlatform";
     private Context mContext;
+    private String mHost;
 	private AppServiceSqlStorage mAppServiceSqlStorage;
 
     /**
@@ -33,9 +35,9 @@ public class AppServicesPlatform {
      * @param context
      */
 	public AppServicesPlatform(Context context) {
-
+		mHost = context.getResources().getString( R.string.appservice_host );
 		mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(context
-				.getApplicationContext());
+				.getApplicationContext(), mHost);
 		mContext = context;
 		startRecurringUpdate();
 	}
@@ -49,7 +51,7 @@ public class AppServicesPlatform {
 	public void update(Message message) {
 		try {
 			RestCacheItem restItem = new RestCacheItem("PUT",
-					RestInterface.PLATFORMURL + "/question/"
+					mHost + "/question/"
 							+ message.getUuid(), message.toJson().toString());
 			mAppServiceSqlStorage.insert(restItem.toContentValues(),
 					AppServiceSqlStorage.T_RESTCACHE);

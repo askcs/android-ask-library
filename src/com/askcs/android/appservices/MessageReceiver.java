@@ -39,7 +39,7 @@ public class MessageReceiver extends BaseRestReceiver {
     public MessageReceiver(Context context, RestInterface restInterface ) {
         super(context, restInterface);
         mContext = context;
-        mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(context);
+        mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(context );
     }
 
     /**
@@ -149,13 +149,13 @@ public class MessageReceiver extends BaseRestReceiver {
 
     @Override
     public boolean get() {
-        return checkMessage(getConnection(RestInterface.PLATFORMURL + PATH) );
+        return checkMessage(getConnection(getHost() + PATH) );
 
     }
 
     @Override
     public boolean get(String uuid) {
-        return checkMessage(getConnection(RestInterface.PLATFORMURL + PATH + "/" + uuid) );
+        return checkMessage(getConnection(getHost() + PATH + "/" + uuid) );
     }
 
 }

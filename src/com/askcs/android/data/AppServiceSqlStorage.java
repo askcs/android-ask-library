@@ -1,7 +1,12 @@
 package com.askcs.android.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.askcs.android.R;
 
 
 public class AppServiceSqlStorage extends SqlStorageBase {
@@ -59,13 +64,21 @@ public class AppServiceSqlStorage extends SqlStorageBase {
         this.onCreate(db);
     }
 
-    private static AppServiceSqlStorage instance = null;
+    private static Map<String, AppServiceSqlStorage> instanceMap
+    = new HashMap<String, AppServiceSqlStorage>();
 
     public static AppServiceSqlStorage getInstance(Context context) {
+    	return getInstance( context, context.getResources().getString( R.string.appservice_host ) );
+    }
+    
+    public static AppServiceSqlStorage getInstance(Context context, String host ) {
+    	AppServiceSqlStorage instance = instanceMap.get( host );
         if (null != instance) {
             return instance;
         } else {
-            return instance = new AppServiceSqlStorage(context.getApplicationContext());
+        	instance = new AppServiceSqlStorage(context.getApplicationContext());
+        	instanceMap.put( host, instance );
+        	return instance;
         }
     }
 

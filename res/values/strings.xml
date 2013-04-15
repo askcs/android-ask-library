@@ -2,7 +2,10 @@
 
     <string name="app_name">android-ask-library</string>
 	<string name="new_message_text">There is a new message</string>
+	
+	
+	<!-- These should be overridden in dependent apps! -->
 	<string name="activity_class"></string>
-	<string name="home_class"></string>
+	<string name="appservice_host"></string>
 	
 </resources>

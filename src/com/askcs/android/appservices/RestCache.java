@@ -36,7 +36,7 @@ public class RestCache {
 
         mContext = context.getApplicationContext();
         mRestInterface = restInterface;
-        mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(mContext);
+        mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(mContext );
     }
 
     /**
@@ -157,7 +157,7 @@ public class RestCache {
                 out.close();
 
                 if (response == 403) {
-                    mRestInterface.login();
+                    mRestInterface.relogin();
                 }
             } while (response == 403 && tries < 3);
 

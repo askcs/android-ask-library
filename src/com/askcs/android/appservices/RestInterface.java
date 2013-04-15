@@ -8,8 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import org.json.JSONException;
 
@@ -20,9 +18,11 @@ import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.askcs.android.R;
 import com.askcs.android.data.AppServiceSqlStorage;
 import com.askcs.android.gcm.GcmManager;
 import com.askcs.android.model.Message;
+import com.askcs.android.util.Digest;
 import com.askcs.android.util.Prefs;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -34,40 +34,12 @@ import com.fasterxml.jackson.core.JsonParser;
  */
 public class RestInterface {
 
-	public static String PLATFORMURL = "http://3rc2.ask-services.appspot.com/ns_moodie";
 	private static String TAG = "RestInterface";
 
-	/**
-	 * Make a MD5 hash from the input string
-	 * 
-	 * @param hashMe
-	 * @return hashed string
-	 */
-	public static String hashPassword(String hashMe) {
-		final byte[] unhashedBytes = hashMe.getBytes();
-		try {
-			final MessageDigest algorithm = MessageDigest.getInstance("MD5");
-			algorithm.reset();
-			algorithm.update(unhashedBytes);
-			final byte[] hashedBytes = algorithm.digest();
-
-			final StringBuffer hexString = new StringBuffer();
-			for (final byte element : hashedBytes) {
-				final String hex = Integer.toHexString(0xFF & element);
-				if (hex.length() == 1) {
-					hexString.append(0);
-				}
-				hexString.append(hex);
-			}
-			return hexString.toString();
-		} catch (final NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
+	
 	private String mXSession;
 	private Context mContext;
+	private String mHost;
 	private AppServiceSqlStorage mAppServiceSqlStorage;
 	private RestCache mRestCache;
     private MessageReceiver mMessageReceiver;
@@ -79,11 +51,16 @@ public class RestInterface {
      */
 	public RestInterface(Context context ) {
 		mContext = context;
-		mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(mContext);
+		mHost = context.getResources().getString( R.string.appservice_host );
+		mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(mContext );
 		mXSession = PreferenceManager.getDefaultSharedPreferences(mContext)
 				.getString(Prefs.SESSION_ID, "");
 		mRestCache = new RestCache(mContext, this);
 		mMessageReceiver = new MessageReceiver(mContext, this );
+	}
+	
+	public String getHost() {
+		return mHost;
 	}
 
 	public boolean getUpdates() {
@@ -99,7 +76,7 @@ public class RestInterface {
 	 * 
 	 * @return HTTP Response code
 	 */
-	public int login() {
+	public int relogin() {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(mContext);
 		String email = prefs.getString(Prefs.EMAIL, null);
@@ -107,8 +84,7 @@ public class RestInterface {
 
 		int responseCode = loginConnection(email, password);
 		if (responseCode == 200) {
-			PreferenceManager.getDefaultSharedPreferences(mContext).edit()
-					.putString("xSession", mXSession).commit();
+			prefs.edit().putString(Prefs.SESSION_ID, mXSession).commit();
 			Log.i(TAG, mXSession);
 		}
 		return responseCode;
@@ -152,10 +128,10 @@ public class RestInterface {
 			// Invalid Credentials
 			return 400;
 		}
-		password = hashPassword(password);
+		password = Digest.hashPassword(password);
 		try {
 			String xSession;
-			URL url = new URL(PLATFORMURL + "/login?" + "uuid=" + email
+			URL url = new URL(mHost + "/login?" + "uuid=" + email
 					+ "&pass=" + password);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setReadTimeout(20000 /* milliseconds */);
@@ -282,11 +258,11 @@ public class RestInterface {
 	 */
 	private int registerConnection(String uuid, String password, String name) {
 		InputStream inputStream = null;
-		password = hashPassword(password);
+		password = Digest.hashPassword(password);
 
 		try {
 			String xSession;
-			String urlString = PLATFORMURL + "/register?" + "uuid="
+			String urlString = mHost + "/register?" + "uuid="
 					+ URLEncoder.encode(uuid, "UTF-8") + "&pass="
 					+ URLEncoder.encode(password, "UTF-8");
 			if (null != name) {
@@ -357,7 +333,7 @@ public class RestInterface {
 			// try it and try to login if it fails
 			do {
 				tries++;
-				URL url = new URL(PLATFORMURL
+				URL url = new URL(mHost
 						+ "/resources?tags={\"C2DMKey\":\"" + key + "\"}");
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setReadTimeout(10000 /* milliseconds */);
@@ -374,7 +350,7 @@ public class RestInterface {
 				out.close();
 				Log.d(TAG, "The response is: " + response);
 				if (response == 403) {
-					login();
+					relogin();
 				}
 				Log.i(TAG, tries + "");
 			} while (response == 403 && tries < 3);
@@ -413,7 +389,7 @@ public class RestInterface {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		contentValues.put(AppServiceSqlStorage.C_RESTCACHE_URL, PLATFORMURL
+		contentValues.put(AppServiceSqlStorage.C_RESTCACHE_URL, mHost
 				+ MessageReceiver.PATH);
 
 		mAppServiceSqlStorage.updateById(message.toContentValues(),

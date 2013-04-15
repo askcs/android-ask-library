@@ -7,6 +7,9 @@ package com.askcs.android.appservices;
  */
 public interface RestReceiver {
 
+	
+	public String getHost();
+	
     /**
      * Requests the objects from the ASK API and stores them locally
      * 

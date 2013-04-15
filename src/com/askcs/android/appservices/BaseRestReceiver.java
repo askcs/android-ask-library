@@ -22,6 +22,11 @@ public abstract class BaseRestReceiver implements RestReceiver {
     public BaseRestReceiver(Context context, RestInterface restInterface) {
         mRestInterface = restInterface;
     }
+    
+    
+    public String getHost() {
+    	return mRestInterface.getHost();
+    }
 
     /**
      * Does HHTP request.
@@ -50,7 +55,7 @@ public abstract class BaseRestReceiver implements RestReceiver {
                 response = conn.getResponseCode();
                 Log.d(TAG, "The response is: " + response);
                 if (response == 403) {
-                    mRestInterface.login();
+                    mRestInterface.relogin();
                 }
                 Log.i(TAG, tries + "");
             } while (response == 403 && tries < 3);

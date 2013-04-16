@@ -34,31 +34,43 @@ import com.fasterxml.jackson.core.JsonParser;
  */
 public class RestInterface {
 
-	private static String TAG = "RestInterface";
+	protected static String TAG = "RestInterface";
+
+	protected String mXSession;
+	protected Context mContext;
+	protected String mHost;
+	protected AppServiceSqlStorage mAppServiceSqlStorage;
+	protected RestCache mRestCache;
+	protected MessageReceiver mMessageReceiver;
 
 	
-	private String mXSession;
-	private Context mContext;
-	private String mHost;
-	private AppServiceSqlStorage mAppServiceSqlStorage;
-	private RestCache mRestCache;
-    private MessageReceiver mMessageReceiver;
+	
+	static public RestInterface getInstance( Context context ) {
+		String version = context.getString( R.string.appservice_version );
+		if (version.equals( "1" )) {
+			return new RestInterface( context );
+		} else if ( version.equals( "2" ) ) {
+			return new RestInterface2( context );
+		} else {
+			throw new RuntimeException( "Unsupported appservice version" );
+		}
+	}
 
 	/**
-     * Constructor.
-     * 
-     * @param context
-     */
-	public RestInterface(Context context ) {
+	 * Constructor.
+	 * 
+	 * @param context
+	 */
+	protected RestInterface(Context context) {
 		mContext = context;
-		mHost = context.getResources().getString( R.string.appservice_host );
-		mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(mContext );
+		mHost = context.getString(R.string.appservice_host);
+		mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(mContext);
 		mXSession = PreferenceManager.getDefaultSharedPreferences(mContext)
 				.getString(Prefs.SESSION_ID, "");
 		mRestCache = new RestCache(mContext, this);
-		mMessageReceiver = new MessageReceiver(mContext, this );
+		mMessageReceiver = new MessageReceiver(mContext, this);
 	}
-	
+
 	public String getHost() {
 		return mHost;
 	}
@@ -104,23 +116,28 @@ public class RestInterface {
 			editor.putString(Prefs.SESSION_ID, mXSession);
 			editor.commit();
 
-            // register for GCM messages
-            GcmManager gcmManager = new GcmManager(mContext);
-            gcmManager.register();
+			// register for GCM messages
+			GcmManager gcmManager = new GcmManager(mContext);
+			gcmManager.register();
 
 			return responseCode;
 		}
 	}
 
-    /**
-     * Login to Ask AppServices with httpUrlConnection
-     * 
-     * @param email
-     *            email address as username
-     * @param password
-     *            unhashed password
-     * @return HTTP response code
-     */
+	
+	protected String getLoginURL( String email, String password ) {
+		return mHost + "/login?" + "uuid=" + email + "&pass=" + password;
+	}
+	
+	/**
+	 * Login to Ask AppServices with httpUrlConnection
+	 * 
+	 * @param email
+	 *            email address as username
+	 * @param password
+	 *            unhashed password
+	 * @return HTTP response code
+	 */
 	private int loginConnection(String email, String password) {
 		InputStream inputStream = null;
 		if (email == null || password == null) {
@@ -131,8 +148,7 @@ public class RestInterface {
 		password = Digest.hashPassword(password);
 		try {
 			String xSession;
-			URL url = new URL(mHost + "/login?" + "uuid=" + email
-					+ "&pass=" + password);
+			URL url = new URL(getLoginURL( email, password ));
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setReadTimeout(20000 /* milliseconds */);
 			conn.setConnectTimeout(20000 /* milliseconds */);
@@ -142,7 +158,7 @@ public class RestInterface {
 			conn.connect();
 			int responseCode = conn.getResponseCode();
 			Log.d(TAG, "The response is: " + responseCode);
-			if(responseCode != 200){
+			if (responseCode != 200) {
 				return responseCode;
 			}
 			inputStream = conn.getInputStream();
@@ -214,7 +230,7 @@ public class RestInterface {
 	 */
 	public int register(String email, String password, String name) {
 		int responseCode = registerConnection(email, password, name);
-		if (responseCode != 200 ) {
+		if (responseCode != 200) {
 			return responseCode;
 		} else {
 			// Successfully logged in and authenticated!
@@ -278,7 +294,7 @@ public class RestInterface {
 			// Starts the query
 			conn.connect();
 			int responseCode = conn.getResponseCode();
-			if(responseCode != 200){
+			if (responseCode != 200) {
 				return responseCode;
 			}
 			Log.d(TAG, "The response is: " + responseCode);
@@ -317,6 +333,16 @@ public class RestInterface {
 		return -1;
 	}
 
+	
+	
+	protected String getGcmRegisterURL( String key ) {
+		return mHost + "/resources?tags={\"C2DMKey\":\"" + key + "\"}";
+	}
+	
+	protected String getGcmRegisterBody( String key ) {
+		return "";
+	}
+	
 	/**
 	 * Register the GCM key at AppServices
 	 * 
@@ -333,8 +359,7 @@ public class RestInterface {
 			// try it and try to login if it fails
 			do {
 				tries++;
-				URL url = new URL(mHost
-						+ "/resources?tags={\"C2DMKey\":\"" + key + "\"}");
+				URL url = new URL( getGcmRegisterURL( key ) );
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setReadTimeout(10000 /* milliseconds */);
 				conn.setConnectTimeout(15000 /* milliseconds */);
@@ -343,9 +368,10 @@ public class RestInterface {
 				conn.setDoOutput(true);
 				conn.setRequestProperty("Cookie", "X-SESSION_ID="
 						+ getXSession());
-                OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-                out.write("");
-				//conn.connect();
+				OutputStreamWriter out = new OutputStreamWriter(
+						conn.getOutputStream());
+				out.write( getGcmRegisterBody( key ) );
+				// conn.connect();
 				response = conn.getResponseCode();
 				out.close();
 				Log.d(TAG, "The response is: " + response);
@@ -363,29 +389,29 @@ public class RestInterface {
 			return true;
 
 		} catch (IOException e) {
-            Log.w(TAG, "Failed to register GCM key", e);
+			Log.w(TAG, "Failed to register GCM key", e);
 			return false;
 		}
-    }
+	}
 
 	public boolean transmitCache() {
 		return mRestCache.transmitCache();
 	}
 
-    /**
+	/**
 	 * Insert an updated message into the restCache to be sent
 	 * 
 	 * @param message
 	 */
-    // TODO: Fix deprecated call to RestCache
-    @SuppressWarnings("deprecation")
-    public void update(Message message) {
+	// TODO: Fix deprecated call to RestCache
+	@SuppressWarnings("deprecation")
+	public void update(Message message) {
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(AppServiceSqlStorage.C_RESTCACHE_ACTION, "PUT");
 		try {
 			contentValues.put(AppServiceSqlStorage.C_RESTCACHE_CONTENT, message
 					.toJson().toString());
-			
+
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -399,8 +425,8 @@ public class RestInterface {
 	}
 
 	// TODO: Fix deprecated call to RestCache
-    @SuppressWarnings("deprecation")
-    public void update(RestCacheItem item) {
+	@SuppressWarnings("deprecation")
+	public void update(RestCacheItem item) {
 		mRestCache.insertIntoCache(item.toContentValues());
 	}
 }

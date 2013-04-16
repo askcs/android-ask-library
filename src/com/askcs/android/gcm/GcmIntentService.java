@@ -23,24 +23,23 @@ public class GcmIntentService extends GCMBaseIntentService {
     }
 
     @Override
-    protected void onError(Context context, String errorId) {
+    public void onError(Context context, String errorId) {
         // TODO Auto-generated method stub
         Log.w(TAG, "Error:" + errorId);
 
     }
 
     @Override
-    protected void onMessage(Context context, Intent intent) {
+    public void onMessage(Context context, Intent intent) {
         Log.v(TAG, "RECEIVED GCM MESSAGE!");
         Intent transmitIntent = new Intent(context, AppServiceService.class);
         transmitIntent.putExtra(AppServiceService.INTENT_COMMAND,
                 AppServiceService.INTENT_TRANSMIT_AND_GET_DATA);
         startService(transmitIntent);
-
     }
 
     @Override
-    protected void onRegistered(Context context, String registrationId) {
+    public void onRegistered(Context context, String registrationId) {
         // Register key at ask
         Intent intent = new Intent(this, AppServiceService.class);
         intent.putExtra(AppServiceService.INTENT_COMMAND,
@@ -51,7 +50,7 @@ public class GcmIntentService extends GCMBaseIntentService {
     }
 
     @Override
-    protected void onUnregistered(Context context, String registrationId) {
+    public void onUnregistered(Context context, String registrationId) {
         // TODO Auto-generated method stub
     }
 }

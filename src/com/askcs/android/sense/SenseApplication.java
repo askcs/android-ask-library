@@ -2,16 +2,16 @@ package com.askcs.android.sense;
 
 import nl.sense_os.platform.SensePlatform;
 import nl.sense_os.service.ServiceStateHelper;
-import android.app.Application;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 
+import com.askcs.android.app.AskApplication;
 import com.askcs.android.util.Prefs;
 
-public class SenseApplication extends Application implements ServiceConnection  {
+public class SenseApplication extends AskApplication implements ServiceConnection  {
 
 	protected SensePlatform mSensePlatform;
 

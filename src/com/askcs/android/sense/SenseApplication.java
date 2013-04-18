@@ -16,6 +16,13 @@ public class SenseApplication extends AskApplication implements ServiceConnectio
 	protected SensePlatform mSensePlatform;
 
 	public SenseApplication() {
+		super();
+	}
+	
+	
+	@Override
+	public void onCreate() {
+		super.onCreate();
 		mSensePlatform = new SensePlatform(this, this);
 	}
 

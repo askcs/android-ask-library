@@ -247,6 +247,11 @@ public class RestInterface {
 			editor.putString( Prefs.PASSWORD, password );
 			editor.putString( Prefs.SESSION_ID, mXSession );
 			editor.commit();
+
+            // register for GCM messages
+            GcmManager gcmManager = new GcmManager(mContext);
+            gcmManager.register();
+
 			return responseCode;
 		}
 	}

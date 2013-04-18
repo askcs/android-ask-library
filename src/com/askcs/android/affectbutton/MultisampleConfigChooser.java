@@ -131,6 +131,7 @@ implements GLSurfaceView.EGLConfigChooser {
 
 		if ( index == -1 ) {
 			Log.w( kTag, "Did not find sane config, using first" );
+			index = 0;
 		}
 
         EGLConfig config = configs.length > 0 ? configs[index] : null;

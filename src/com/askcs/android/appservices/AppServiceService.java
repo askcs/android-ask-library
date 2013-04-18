@@ -23,15 +23,15 @@ public class AppServiceService extends IntentService {
 
 	public static final String INTENT_COMMAND = "command";
 	public static final String INTENT_EXTRA_RESULT_RECEIVER = "receiver";
-	public static final String INTENT_EXTRA_REGISTER_EMAIL = "email";
-	public static final String INTENT_EXTRA_REGISTER_PASSWORD = "password";
-	public static final String INTENT_EXTRA_LOGIN_EMAIL = "email";
-	public static final String INTENT_EXTRA_LOGIN_PASSWORD = "password";
+	public static final String INTENT_EXTRA_EMAIL = "email";
+    public static final String INTENT_EXTRA_PASSWORD = "password";
 	public static final String INTENT_EXTRA_GCM_KEY = "gcmKey";
 	public static final String INTENT_EXTRA_RESTCACHE_ENTRY = "restcacheEntry";
+    public static final String INTENT_EXTRA_RESET_PW_PATH = "path";
 
 	public static final int INTENT_REGISTER = 0;
-	public static final int INTENT_LOGIN = 1;
+    public static final int INTENT_LOGIN = 1;
+    public static final int INTENT_RESET_PW = 2;
 	public static final int INTENT_TRANSMIT_AND_GET_DATA = 4;
 	public static final int INTENT_INSERT_INTO_RESTCACHE = 5;
 	public static final int INTENT_REGISTER_GCM_APPSERVICES = 6;
@@ -42,6 +42,8 @@ public class AppServiceService extends IntentService {
 	public static final int RESULTCODE_SUCCESFUL = 200;
 	public static final int RESULTCODE_BAD_CREDENTIALS = 400;
 	public static final int RESULTCODE_CONFLICT = 409;
+
+
 
     private RestInterface mRestInterface;
 
@@ -91,15 +93,14 @@ public class AppServiceService extends IntentService {
                 break;
 
             case INTENT_REGISTER:
-                String registerEmail = intent.getStringExtra(INTENT_EXTRA_REGISTER_EMAIL);
-                String registerPassword = intent.getStringExtra(INTENT_EXTRA_REGISTER_PASSWORD);
+                String registerEmail = intent.getStringExtra(INTENT_EXTRA_EMAIL);
+                String registerPassword = intent.getStringExtra(INTENT_EXTRA_PASSWORD);
                 resultCode = mRestInterface.register(registerEmail, registerPassword);
                 break;
 
             case INTENT_LOGIN:
-
-                String loginEmail = intent.getStringExtra(INTENT_EXTRA_LOGIN_EMAIL);
-                String loginPassword = intent.getStringExtra(INTENT_EXTRA_LOGIN_PASSWORD);
+                String loginEmail = intent.getStringExtra(INTENT_EXTRA_EMAIL);
+                String loginPassword = intent.getStringExtra(INTENT_EXTRA_PASSWORD);
 
                 if (loginEmail != null && loginPassword != null) {
                     resultCode = mRestInterface.login(loginEmail, loginPassword);
@@ -109,6 +110,12 @@ public class AppServiceService extends IntentService {
                     resultCode = mRestInterface.relogin();
                 }
 
+                break;
+
+            case INTENT_RESET_PW:
+                String resetPwEmail = intent.getStringExtra(INTENT_EXTRA_EMAIL);
+                String resetPwPath = intent.getStringExtra(INTENT_EXTRA_RESET_PW_PATH);
+                resultCode = mRestInterface.resetPassword(resetPwEmail, resetPwPath);
                 break;
 
             case INTENT_TRANSMIT_AND_GET_DATA:

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.ResultReceiver;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -95,8 +94,8 @@ public class AppServicesPlatform {
 				resultReceiver);
 		intent.putExtra(AppServiceService.INTENT_COMMAND,
 				AppServiceService.INTENT_LOGIN);
-		intent.putExtra(AppServiceService.INTENT_EXTRA_LOGIN_EMAIL, email);
-		intent.putExtra(AppServiceService.INTENT_EXTRA_LOGIN_PASSWORD, password);
+        intent.putExtra(AppServiceService.INTENT_EXTRA_EMAIL, email);
+        intent.putExtra(AppServiceService.INTENT_EXTRA_PASSWORD, password);
 		mContext.startService(intent);
 	}
 
@@ -121,10 +120,29 @@ public class AppServicesPlatform {
 				resultReceiver);
 		intent.putExtra(AppServiceService.INTENT_COMMAND,
 				AppServiceService.INTENT_REGISTER);
-		intent.putExtra(AppServiceService.INTENT_EXTRA_REGISTER_EMAIL, email);
-		intent.putExtra(AppServiceService.INTENT_EXTRA_REGISTER_PASSWORD, password);
+		intent.putExtra(AppServiceService.INTENT_EXTRA_EMAIL, email);
+		intent.putExtra(AppServiceService.INTENT_EXTRA_PASSWORD, password);
 		mContext.startService(intent);
 	}
+
+    /**
+     * Requests a password reset. The user will recieve an email with a link to set a new password.
+     * 
+     * @param email
+     *            Email address of the account to reset
+     * @param callbackUrl
+     *            URL where the user can reset his password, to put in the email
+     * @param resultReceiver
+     *            (Optional) result receiver
+     */
+    public void resetPassword(String email, String callbackUrl, ResultReceiver resultReceiver) {
+        Intent intent = new Intent(mContext, AppServiceService.class);
+        intent.putExtra(AppServiceService.INTENT_EXTRA_RESULT_RECEIVER, resultReceiver);
+        intent.putExtra(AppServiceService.INTENT_COMMAND, AppServiceService.INTENT_RESET_PW);
+        intent.putExtra(AppServiceService.INTENT_EXTRA_EMAIL, email);
+        intent.putExtra(AppServiceService.INTENT_EXTRA_RESET_PW_PATH, callbackUrl);
+        mContext.startService(intent);
+    }
 
 	/**
 	 * Schedule the update task to be launched with the interval specified in

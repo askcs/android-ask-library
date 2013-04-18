@@ -30,6 +30,7 @@ public abstract class SenseTask<T extends Object> extends
 
 	@Override
 	protected Boolean doInBackground( Map<String, ? super T>... maps ) {
+		Log.i( TAG, "doInBackground: got " + maps.length + " arguments" );
 		for ( Map<String, ? super T> map : maps ) {
 			mApplication.getSensePlatform().addDataPoint( mSensorName,
 					mDisplayName, mDescription, getType(), getValue( map ),

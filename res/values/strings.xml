@@ -7,7 +7,6 @@
 	<!-- These should be overridden in dependent apps! -->
 	<string name="activity_class"></string>
 	<string name="appservice_host"></string>
-	<string name="appservice_stem"></string>
 	<string name="appservice_version"></string>
 	<string name="gcm_handler"></string>
 	

@@ -28,14 +28,21 @@ public class AppServiceService extends IntentService {
 	public static final String INTENT_EXTRA_GCM_KEY = "gcmKey";
 	public static final String INTENT_EXTRA_RESTCACHE_ENTRY = "restcacheEntry";
     public static final String INTENT_EXTRA_RESET_PW_PATH = "path";
+    public static final String INTENT_EXTRA_NOTE = "note";
+    public static final String INTENT_EXTRA_AFFECT_PLEASURE = "affectPleasure";
+    public static final String INTENT_EXTRA_AFFECT_AROUSAL = "affectArousal";
+    public static final String INTENT_EXTRA_AFFECT_DOMINANCE = "affectDominance";
 
-	public static final int INTENT_REGISTER = 0;
+
+    public static final int INTENT_REGISTER = 0;
     public static final int INTENT_LOGIN = 1;
     public static final int INTENT_RESET_PW = 2;
 	public static final int INTENT_TRANSMIT_AND_GET_DATA = 4;
 	public static final int INTENT_INSERT_INTO_RESTCACHE = 5;
 	public static final int INTENT_REGISTER_GCM_APPSERVICES = 6;
 	public static final int INTENT_UNREGISTER_GCM = 7;
+	public static final int INTENT_POST_NOTE = 8;
+	public static final int INTENT_POST_AFFECT = 9;
 
 	public static final int RESULTCODE_FAILED = -1;
 	public static final int RESULTCODE_NO_NETWORK = 0;
@@ -146,6 +153,27 @@ public class AppServiceService extends IntentService {
                 GcmManager gcmManager = new GcmManager(this);
                 gcmManager.unregister();
                 break;
+                
+            case INTENT_POST_NOTE :
+            	String note = intent.getStringExtra( INTENT_EXTRA_NOTE );
+            	if ( mRestInterface.postNote( note ) ) {
+            		resultCode = RESULTCODE_SUCCESFUL;
+            	} else {
+            		resultCode = RESULTCODE_FAILED;
+            	}
+                break;
+            
+            case INTENT_POST_AFFECT :
+            	double pleasure = intent.getDoubleExtra( INTENT_EXTRA_AFFECT_PLEASURE, 0D );
+            	double arousal = intent.getDoubleExtra( INTENT_EXTRA_AFFECT_AROUSAL, 0D );
+            	double dominance = intent.getDoubleExtra( INTENT_EXTRA_AFFECT_DOMINANCE, 0D );
+            	if ( mRestInterface.postAffect( pleasure, arousal, dominance ) ) {
+            		resultCode = RESULTCODE_SUCCESFUL;
+            	} else {
+            		resultCode = RESULTCODE_FAILED;
+            	}
+                break;
+            
             }
 
             if (receiver != null) {

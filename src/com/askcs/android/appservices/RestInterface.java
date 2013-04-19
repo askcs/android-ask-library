@@ -19,7 +19,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.askcs.android.R;
-import com.askcs.android.affectbutton.Affect;
 import com.askcs.android.data.AppServiceSqlStorage;
 import com.askcs.android.gcm.GcmManager;
 import com.askcs.android.model.Message;
@@ -40,7 +39,6 @@ public class RestInterface {
 	protected String mXSession;
 	protected Context mContext;
 	protected String mHost;
-	protected String mStem;
 	protected AppServiceSqlStorage mAppServiceSqlStorage;
 	protected RestCache mRestCache;
 	protected MessageReceiver mMessageReceiver;
@@ -64,13 +62,6 @@ public class RestInterface {
 	protected RestInterface( Context context ) {
 		mContext = context;
 		mHost = context.getString( R.string.appservice_host );
-		mStem = context.getString( R.string.appservice_stem );
-		if ( mStem == null ) {
-			mStem = "";
-		}
-		if ( !mStem.startsWith( "/" ) ) {
-			mStem = "/" + mStem;
-		}
 		mAppServiceSqlStorage = AppServiceSqlStorage.getInstance( mContext );
 		mXSession = PreferenceManager.getDefaultSharedPreferences( mContext )
 				.getString( Prefs.SESSION_ID, "" );
@@ -79,7 +70,7 @@ public class RestInterface {
 	}
 
 	public String getHost() {
-		return mHost + mStem;
+		return mHost;
 	}
 
 	public boolean getUpdates() {
@@ -424,10 +415,11 @@ public class RestInterface {
 						+ getXSession() );
 				OutputStreamWriter out = new OutputStreamWriter(
 						conn.getOutputStream() );
-				out.write( getGcmRegisterBody( key ) );
-				// conn.connect();
-				response = conn.getResponseCode();
+				String body = getGcmRegisterBody( key );
+				conn.connect();
+				out.write( body );
 				out.close();
+				response = conn.getResponseCode();
 				Log.d( TAG, "The response is: " + response );
 				if ( response == 403 ) {
 					relogin();
@@ -490,7 +482,7 @@ public class RestInterface {
 		throw new RuntimeException( "Not implemented in version 1" );
 	}
 	
-	public boolean postAffect( Affect affect ) {
+	public boolean postAffect( double pleasure, double arousal, double dominance ) {
 		throw new RuntimeException( "Not implemented in version 1" );
 	}
 	

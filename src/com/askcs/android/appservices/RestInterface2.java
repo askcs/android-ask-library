@@ -8,8 +8,6 @@ import java.net.URL;
 import android.content.Context;
 import android.util.Log;
 
-import com.askcs.android.affectbutton.Affect;
-
 public class RestInterface2 extends RestInterface {
 
 	private static String TAG = "RestInterface";
@@ -50,7 +48,7 @@ public class RestInterface2 extends RestInterface {
 		URL url = null;
 		try {
 			do {
-				url = new URL( mHost + "/notes" );
+				url = new URL( mHost + "/timeout/notes" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setReadTimeout( 20000 /* milliseconds */);
 				conn.setConnectTimeout( 30000 /* milliseconds */);
@@ -62,8 +60,8 @@ public class RestInterface2 extends RestInterface {
 				OutputStreamWriter out = new OutputStreamWriter(
 						conn.getOutputStream() );
 				out.write( "{\"content\":\"" + note + "\"}" );
-				response = conn.getResponseCode();
 				out.close();
+				response = conn.getResponseCode();
 				Log.d( TAG, "The response is: " + response );
 				if ( response == 403 ) {
 					relogin();
@@ -78,14 +76,14 @@ public class RestInterface2 extends RestInterface {
 	}
 	
 	@Override
-	public boolean postAffect( Affect affect ) {
+	public boolean postAffect( double pleasure, double arousal, double dominance ) {
 		HttpURLConnection conn;
 		int tries = -1;
 		int response = -1;
 		URL url = null;
 		try {
 			do {
-				url = new URL( mHost + "/emotion" );
+				url = new URL( mHost + "/timeout/emotion" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setReadTimeout( 20000 /* milliseconds */);
 				conn.setConnectTimeout( 30000 /* milliseconds */);
@@ -96,11 +94,11 @@ public class RestInterface2 extends RestInterface {
 						+ getXSession() );
 				OutputStreamWriter out = new OutputStreamWriter(
 						conn.getOutputStream() );
-				out.write( "{\"pleasure\":" + affect.getPleasure()
-						+ ",\"arousal\":" + affect.getArousal()
-						+ ",\"dominance\":" + affect.getDominance() + "}" );
-				response = conn.getResponseCode();
+				out.write( "{\"pleasure\":" + pleasure
+						+ ",\"arousal\":" + arousal
+						+ ",\"dominance\":" + dominance + "}" );
 				out.close();
+				response = conn.getResponseCode();
 				Log.d( TAG, "The response is: " + response );
 				if ( response == 403 ) {
 					relogin();

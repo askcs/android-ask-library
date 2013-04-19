@@ -40,7 +40,7 @@ public abstract class BaseRestReceiver implements RestReceiver {
         HttpURLConnection conn;
 
         try {
-
+        	
             do {
                 tries++;
                 URL url = new URL(httpUrl);
@@ -63,7 +63,8 @@ public abstract class BaseRestReceiver implements RestReceiver {
             return conn.getInputStream();
 
         } catch (IOException e) {
-            Log.e(TAG, "Failed to communicate with ASK API!", e);
+            Log.e(TAG, "Failed to communicate with ASK API at " + mRestInterface.mHost + " : " + e.getClass().getName());
+            e.printStackTrace();
             return null;
         }
     }

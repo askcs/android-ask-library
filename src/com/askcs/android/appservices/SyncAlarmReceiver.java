@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
+import android.util.Log;
 
 
 /**
@@ -22,7 +23,7 @@ public class SyncAlarmReceiver extends BroadcastReceiver {
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
         try {
             wl.acquire();
-
+            Log.i( "SyncAlarmReceiver", "going to send a transmit-and-get intent" );
             // start app services service
             Intent sync = new Intent(Intent.ACTION_SYNC, null, context, AppServiceService.class);
             sync.putExtra(AppServiceService.INTENT_COMMAND,

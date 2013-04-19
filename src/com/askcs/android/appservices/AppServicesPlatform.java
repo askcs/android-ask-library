@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.askcs.android.R;
+import com.askcs.android.affectbutton.Affect;
 import com.askcs.android.data.AppServiceSqlStorage;
 import com.askcs.android.model.Message;
 import com.askcs.android.util.Prefs;
@@ -22,50 +23,50 @@ import com.askcs.android.util.Prefs;
  * @author Ian Zwanink <izwanink@ask-cs.com>
  */
 public class AppServicesPlatform {
-	
-    private static final String TAG = "AppServicesPlatform";
-    private Context mContext;
-    private String mHost;
+
+	private static final String TAG = "AppServicesPlatform";
+	private Context mContext;
+	private String mHost;
 	private AppServiceSqlStorage mAppServiceSqlStorage;
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     */
+	/**
+	 * Constructor.
+	 * 
+	 * @param context
+	 */
 	public AppServicesPlatform(Context context) {
-		mHost = context.getResources().getString( R.string.appservice_host );
-		mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(context
-				.getApplicationContext(), mHost);
+		mHost = context.getResources().getString(R.string.appservice_host);
+		mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(
+				context.getApplicationContext(), mHost);
 		mContext = context;
 		startRecurringUpdate();
 	}
 
-    /**
-     * Inserts a Message into the restCache to be sent later.
-     * 
-     * @param message
-     *            {@link Message} object with a Uuid
-     */
+	/**
+	 * Inserts a Message into the restCache to be sent later.
+	 * 
+	 * @param message
+	 *            {@link Message} object with a Uuid
+	 */
 	public void update(Message message) {
 		try {
-			RestCacheItem restItem = new RestCacheItem("PUT",
-					mHost + "/question/"
-							+ message.getUuid(), message.toJson().toString());
+			RestCacheItem restItem = new RestCacheItem("PUT", mHost
+					+ "/question/" + message.getUuid(), message.toJson()
+					.toString());
 			mAppServiceSqlStorage.insert(restItem.toContentValues(),
 					AppServiceSqlStorage.T_RESTCACHE);
 
 			mAppServiceSqlStorage.updateById(message.toContentValues(),
 					AppServiceSqlStorage.T_MESSAGE, message.getId());
 		} catch (JSONException e) {
-            Log.e(TAG, "Failed to update message", e);
-            // TODO: do not silently fail
+			Log.e(TAG, "Failed to update message", e);
+			// TODO: do not silently fail
 		}
 	}
 
-    /**
-     * Transmits the restCache and check for new updates
-     */
+	/**
+	 * Transmits the restCache and check for new updates
+	 */
 	public void transmit() {
 		Intent intent = new Intent(Intent.ACTION_SYNC, null, mContext,
 				AppServiceService.class);
@@ -88,18 +89,40 @@ public class AppServicesPlatform {
 	 *            implement @link {@link AppServiceResultReceiver} can be set to
 	 *            null.
 	 */
-    public void login(String email, String password, ResultReceiver resultReceiver) {
+	public void login(String email, String password,
+			ResultReceiver resultReceiver) {
 		Intent intent = new Intent(mContext, AppServiceService.class);
 		intent.putExtra(AppServiceService.INTENT_EXTRA_RESULT_RECEIVER,
 				resultReceiver);
 		intent.putExtra(AppServiceService.INTENT_COMMAND,
 				AppServiceService.INTENT_LOGIN);
-        intent.putExtra(AppServiceService.INTENT_EXTRA_EMAIL, email);
-        intent.putExtra(AppServiceService.INTENT_EXTRA_PASSWORD, password);
+		intent.putExtra(AppServiceService.INTENT_EXTRA_EMAIL, email);
+		intent.putExtra(AppServiceService.INTENT_EXTRA_PASSWORD, password);
 		mContext.startService(intent);
 	}
 
-	
+	public void postNote(String note, ResultReceiver resultReceiver) {
+		Intent intent = new Intent(mContext, AppServiceService.class);
+		intent.putExtra( AppServiceService.INTENT_EXTRA_RESULT_RECEIVER,
+				resultReceiver );
+		intent.putExtra( AppServiceService.INTENT_COMMAND,
+				AppServiceService.INTENT_POST_NOTE );
+		intent.putExtra(AppServiceService.INTENT_EXTRA_NOTE, note);
+		mContext.startService(intent);
+	}
+
+	public void postAffect(Affect affect, ResultReceiver resultReceiver) {
+		Intent intent = new Intent(mContext, AppServiceService.class);
+		intent.putExtra(AppServiceService.INTENT_EXTRA_RESULT_RECEIVER,
+				resultReceiver);
+		intent.putExtra(AppServiceService.INTENT_COMMAND,
+				AppServiceService.INTENT_POST_AFFECT);
+		intent.putExtra(AppServiceService.INTENT_EXTRA_AFFECT_PLEASURE, affect.getPleasure() );
+		intent.putExtra(AppServiceService.INTENT_EXTRA_AFFECT_AROUSAL, affect.getArousal() );
+		intent.putExtra(AppServiceService.INTENT_EXTRA_AFFECT_DOMINANCE, affect.getDominance() );
+		mContext.startService(intent);
+	}
+
 	/**
 	 * Register at AppServices
 	 * 
@@ -114,7 +137,8 @@ public class AppServicesPlatform {
 	 *            implement @link {@link AppServiceResultReceiver} can be set to
 	 *            null.
 	 */
-    public void register(String email, String password, ResultReceiver resultReceiver) {
+	public void register(String email, String password,
+			ResultReceiver resultReceiver) {
 		Intent intent = new Intent(mContext, AppServiceService.class);
 		intent.putExtra(AppServiceService.INTENT_EXTRA_RESULT_RECEIVER,
 				resultReceiver);
@@ -125,24 +149,29 @@ public class AppServicesPlatform {
 		mContext.startService(intent);
 	}
 
-    /**
-     * Requests a password reset. The user will recieve an email with a link to set a new password.
-     * 
-     * @param email
-     *            Email address of the account to reset
-     * @param callbackUrl
-     *            URL where the user can reset his password, to put in the email
-     * @param resultReceiver
-     *            (Optional) result receiver
-     */
-    public void resetPassword(String email, String callbackUrl, ResultReceiver resultReceiver) {
-        Intent intent = new Intent(mContext, AppServiceService.class);
-        intent.putExtra(AppServiceService.INTENT_EXTRA_RESULT_RECEIVER, resultReceiver);
-        intent.putExtra(AppServiceService.INTENT_COMMAND, AppServiceService.INTENT_RESET_PW);
-        intent.putExtra(AppServiceService.INTENT_EXTRA_EMAIL, email);
-        intent.putExtra(AppServiceService.INTENT_EXTRA_RESET_PW_PATH, callbackUrl);
-        mContext.startService(intent);
-    }
+	/**
+	 * Requests a password reset. The user will recieve an email with a link to
+	 * set a new password.
+	 * 
+	 * @param email
+	 *            Email address of the account to reset
+	 * @param callbackUrl
+	 *            URL where the user can reset his password, to put in the email
+	 * @param resultReceiver
+	 *            (Optional) result receiver
+	 */
+	public void resetPassword(String email, String callbackUrl,
+			ResultReceiver resultReceiver) {
+		Intent intent = new Intent(mContext, AppServiceService.class);
+		intent.putExtra(AppServiceService.INTENT_EXTRA_RESULT_RECEIVER,
+				resultReceiver);
+		intent.putExtra(AppServiceService.INTENT_COMMAND,
+				AppServiceService.INTENT_RESET_PW);
+		intent.putExtra(AppServiceService.INTENT_EXTRA_EMAIL, email);
+		intent.putExtra(AppServiceService.INTENT_EXTRA_RESET_PW_PATH,
+				callbackUrl);
+		mContext.startService(intent);
+	}
 
 	/**
 	 * Schedule the update task to be launched with the interval specified in
@@ -166,8 +195,7 @@ public class AppServicesPlatform {
 				PendingIntent pendingIntent = PendingIntent.getBroadcast(
 						mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 				mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-						0, prefs.getLong(
-								"updateFrequency",
+						0, prefs.getLong("updateFrequency",
 								AlarmManager.INTERVAL_FIFTEEN_MINUTES),
 						pendingIntent);
 			}
@@ -221,27 +249,25 @@ public class AppServicesPlatform {
 	 *            optimize battery usage
 	 */
 	public void setRecurringUpdateFrequency(long time) {
-		
+
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(mContext);
 
 		prefs.edit().putLong("updateFrequency", time).commit();
-		
+
 		if (!prefs.getString(Prefs.EMAIL, "").equals("")
 				&& !prefs.getString(Prefs.PASSWORD, "").equals("")) {
 
+			Intent intent = new Intent(mContext, SyncAlarmReceiver.class);
 
-		Intent intent = new Intent(mContext, SyncAlarmReceiver.class);
-
-		AlarmManager mgr = (AlarmManager) mContext
-				.getSystemService(Context.ALARM_SERVICE);
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(
-				mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-				0, prefs.getLong(
-						"updateFrequency",
-						AlarmManager.INTERVAL_FIFTEEN_MINUTES),
-				pendingIntent);
+			AlarmManager mgr = (AlarmManager) mContext
+					.getSystemService(Context.ALARM_SERVICE);
+			PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext,
+					0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0,
+					prefs.getLong("updateFrequency",
+							AlarmManager.INTERVAL_FIFTEEN_MINUTES),
+					pendingIntent);
 		}
 	}
 

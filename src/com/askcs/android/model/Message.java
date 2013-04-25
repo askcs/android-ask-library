@@ -164,7 +164,7 @@ public class Message implements Parcelable {
     	contentValues.put(AppServiceSqlStorage.C_MESSAGE_QUESTION_TEXT, mQuestionText);
     	contentValues.put(AppServiceSqlStorage.C_MESSAGE_TYPE, mType);
     	contentValues.put(AppServiceSqlStorage.C_MESSAGE_STATE, mState);
-    	contentValues.put(AppServiceSqlStorage.C_MESSAGE_CREATIONTIME, mCreationTime);  	
+    	contentValues.put(AppServiceSqlStorage.C_MESSAGE_CREATIONTIME, mCreationTime);
     	return contentValues;
     }
 

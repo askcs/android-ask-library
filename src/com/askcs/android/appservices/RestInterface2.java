@@ -1,12 +1,17 @@
 package com.askcs.android.appservices;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.CharBuffer;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.askcs.android.json.JsonMap;
+import com.fasterxml.jackson.core.TreeNode;
 
 public class RestInterface2 extends RestInterface {
 
@@ -39,7 +44,85 @@ public class RestInterface2 extends RestInterface {
 		return "{\"key\":\"" + key + "\"}";
 	}
 
+	
 	// TODO make the "retry" logic available generally
+	
+	@Override
+	public boolean startTimeout() {
+		HttpURLConnection conn;
+		int tries = -1;
+		int response = -1;
+		URL url = null;
+		try {
+			do {
+				url = new URL( mHost + "/timeout/start" ); // TODO wrong place for appspecific prefix
+				conn = (HttpURLConnection) url.openConnection();
+				conn.setReadTimeout( 20000 /* milliseconds */);
+				conn.setConnectTimeout( 30000 /* milliseconds */);
+				conn.setRequestMethod( "GET" );
+				conn.setDoInput( true );
+				conn.setRequestProperty( "Cookie", "X-SESSION_ID="
+						+ getXSession() );
+				response = conn.getResponseCode();
+				Log.d( TAG, "The response is: " + response );
+				if ( response == 403 ) {
+					relogin();
+				}
+			} while ( response == 403 && tries < 3 );
+			return true;
+		} catch ( IOException e ) {
+			Log.e( TAG, "Something wicked happened while GETting to " + url );
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	
+	@Override
+	public TreeNode checkTimeout() {
+		HttpURLConnection conn;
+		int tries = -1;
+		int response = -1;
+		URL url = null;
+		try {
+			do {
+				url = new URL( mHost + "/timeout" ); // TODO wrong place for appspecific prefix
+				conn = (HttpURLConnection) url.openConnection();
+				conn.setReadTimeout( 20000 /* milliseconds */);
+				conn.setConnectTimeout( 30000 /* milliseconds */);
+				conn.setRequestMethod( "GET" );
+				conn.setDoInput( true );
+				conn.setRequestProperty( "Cookie", "X-SESSION_ID="
+						+ getXSession() );
+				conn.setRequestProperty( "Accept-Encoding", "" );
+				response = conn.getResponseCode();
+				Log.d( TAG, "The response is: " + response );
+				if ( response == 403 ) {
+					relogin();
+				} else if ( response == 200 ) {
+					InputStreamReader reader = new InputStreamReader( conn.getInputStream() );
+					CharBuffer buffer = CharBuffer.allocate( 256 );
+					StringBuffer json = new StringBuffer( 1024 );
+					int read = -1;
+					while ( (read = reader.read( buffer )) >= 0 ) {
+						buffer.rewind();
+						json.append( buffer.subSequence(0, read ) );
+						buffer.clear();
+					}
+					Log.i( TAG, "checkTimeout returned: " + json.length() + " : " + json.toString() );
+					return JsonMap.parse( json.toString() );
+				}
+			} while ( response == 403 && tries < 3 );
+			return null;
+		} catch ( IOException e ) {
+			Log.e( TAG, "Something wicked happened while GETting to " + url );
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	
 	@Override
 	public boolean postNote( String note ) {
 		HttpURLConnection conn;
@@ -69,7 +152,7 @@ public class RestInterface2 extends RestInterface {
 			} while ( response == 403 && tries < 3 );
 			return true;
 		} catch ( IOException e ) {
-			Log.e( TAG, "Something wicked happened while POSTing to /notes" );
+			Log.e( TAG, "Something wicked happened while POSTing to " + url );
 			e.printStackTrace();
 			return false;
 		}

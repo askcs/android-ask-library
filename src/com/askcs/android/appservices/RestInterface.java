@@ -26,6 +26,7 @@ import com.askcs.android.util.Digest;
 import com.askcs.android.util.Prefs;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.TreeNode;
 
 /**
  * Interface for calls to the ASK REST API.
@@ -477,6 +478,15 @@ public class RestInterface {
 	}
 	
 	
+	// TODO wrong place for timeout specific code
+	
+	public boolean startTimeout() {
+		throw new RuntimeException( "Not implemented in version 1" );
+	}
+	
+	public TreeNode checkTimeout() {
+		throw new RuntimeException( "Not implemented in version 1" );
+	}
 	
 	public boolean postNote( String note ) {
 		throw new RuntimeException( "Not implemented in version 1" );

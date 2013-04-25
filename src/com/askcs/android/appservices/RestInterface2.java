@@ -10,9 +10,6 @@ import java.nio.CharBuffer;
 import android.content.Context;
 import android.util.Log;
 
-import com.askcs.android.json.JsonMap;
-import com.fasterxml.jackson.core.TreeNode;
-
 public class RestInterface2 extends RestInterface {
 
 	private static String TAG = "RestInterface";
@@ -79,7 +76,7 @@ public class RestInterface2 extends RestInterface {
 	
 	
 	@Override
-	public TreeNode checkTimeout() {
+	public String checkTimeout() {
 		HttpURLConnection conn;
 		int tries = -1;
 		int response = -1;
@@ -109,8 +106,8 @@ public class RestInterface2 extends RestInterface {
 						json.append( buffer.subSequence(0, read ) );
 						buffer.clear();
 					}
-					Log.i( TAG, "checkTimeout returned: " + json.length() + " : " + json.toString() );
-					return JsonMap.parse( json.toString() );
+					// Log.i( TAG, "checkTimeout returned: " + json.length() + " : " + json.toString() );
+					return json.toString();
 				}
 			} while ( response == 403 && tries < 3 );
 			return null;

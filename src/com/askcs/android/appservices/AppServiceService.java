@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.ResultReceiver;
@@ -87,7 +88,9 @@ public class AppServiceService extends IntentService {
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
 				"AppServiceWakelock");
-
+		
+		String result = null;
+		
 		try {
 			wl.acquire();
 
@@ -200,7 +203,8 @@ public class AppServiceService extends IntentService {
 				break;
 				
 			case INTENT_CHECK_TIMEOUT:
-				if ( mRestInterface.checkTimeout() != null ) {
+				result = mRestInterface.checkTimeout();
+				if ( result != null ) {
 					resultCode = RESULTCODE_SUCCESFUL;
 				} else {
 					resultCode = RESULTCODE_FAILED;
@@ -211,8 +215,12 @@ public class AppServiceService extends IntentService {
 			
 			
 			if (receiver != null) {
-
-				receiver.send(resultCode, null);
+				Bundle bundle = null;
+				if ( result != null ) {
+					bundle = new Bundle();
+					bundle.putString(  "result", result );
+				}
+				receiver.send(resultCode, bundle );
 
 			}
 		} finally {

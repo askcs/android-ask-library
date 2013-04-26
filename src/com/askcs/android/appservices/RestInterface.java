@@ -162,7 +162,7 @@ public class RestInterface {
 
 			// Parse the stream as json
 			JsonFactory jfactory = new JsonFactory();
-			JsonParser jParser = jfactory.createJsonParser( inputStream );
+			JsonParser jParser = jfactory.createJsonParser( inputStream ); // deprecated, what now?
 			// skip over the first "{" token
 			jParser.nextToken();
 			jParser.nextToken();
@@ -304,7 +304,7 @@ public class RestInterface {
 
 			// Parse the stream as json
 			JsonFactory jfactory = new JsonFactory();
-			JsonParser jParser = jfactory.createJsonParser( inputStream );
+			JsonParser jParser = jfactory.createJsonParser( inputStream ); // deprecated, what now?
 			// skip over the first "{" token
 			jParser.nextToken();
 			jParser.nextToken();

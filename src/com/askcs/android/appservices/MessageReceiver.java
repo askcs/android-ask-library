@@ -63,7 +63,7 @@ public class MessageReceiver extends BaseRestReceiver {
 
         try {
             JsonFactory jfactory = new JsonFactory();
-            JsonParser jParser = jfactory.createJsonParser(inputStream);
+            JsonParser jParser = jfactory.createJsonParser(inputStream); //deprecated.. what now?
 
             for (JsonToken token = jParser.nextToken(); token != JsonToken.END_ARRAY
                     && token != null; token = jParser.nextToken()) {

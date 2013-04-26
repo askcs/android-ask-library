@@ -13,8 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JsonMap
 extends LinkedHashMap<String, String> {
 	
-	static private final String TAG = "JsonMap";
-	
 	static public TreeNode parse( String string ) throws JsonParseException, IOException {
 		JsonFactory factory = new JsonFactory();
 		JsonParser parser = factory.createParser( string );

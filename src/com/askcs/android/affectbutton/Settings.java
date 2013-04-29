@@ -7,7 +7,7 @@ public class Settings {
 	static public final double SIGMOID_SLOPE = 11d;
 	static public final double SIGMOID_ZERO = 8d;
 	
-	static public final float FACE_MARGIN = 0.1f;
+	static public final float FACE_MARGIN = 0.05f;
 	static public final double MULTIPLIER = SENSITIVITY / (1f + FACE_MARGIN);
 	
 	// "primitive" shapes

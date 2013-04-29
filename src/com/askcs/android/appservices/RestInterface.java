@@ -154,7 +154,7 @@ public class RestInterface {
 			// Starts the query
 			conn.connect();
 			int responseCode = conn.getResponseCode();
-			Log.d( TAG, "The response is: " + responseCode );
+			Log.d( TAG, "loginConnection(): The response is: " + responseCode );
 			if ( responseCode != 200 ) {
 				return responseCode;
 			}
@@ -299,7 +299,7 @@ public class RestInterface {
 			if ( responseCode != 200 ) {
 				return responseCode;
 			}
-			Log.d( TAG, "The response is: " + responseCode );
+			Log.d( TAG, "register(): The response is: " + responseCode );
 			inputStream = conn.getInputStream();
 
 			// Parse the stream as json
@@ -371,7 +371,7 @@ public class RestInterface {
 			// Starts the query
 			conn.connect();
 			int responseCode = conn.getResponseCode();
-			Log.v( TAG, "The response is: " + responseCode );
+			Log.v( TAG, "resetPassword(): The response is: " + responseCode );
 			return responseCode;
 
 		} catch ( Exception e ) {
@@ -420,7 +420,7 @@ public class RestInterface {
 				out.write( body );
 				out.close();
 				response = conn.getResponseCode();
-				Log.d( TAG, "The response is: " + response );
+				Log.d( TAG, "registerGcmKey: The response is: " + response );
 				if ( response == 403 ) {
 					relogin();
 				}

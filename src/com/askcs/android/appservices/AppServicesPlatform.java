@@ -104,6 +104,15 @@ public class AppServicesPlatform {
 	
 	// TODO wrong place for timeout specific code
 	
+	public void checkSensors( ResultReceiver resultReceiver ) {
+		Intent intent = new Intent(mContext, AppServiceService.class);
+		intent.putExtra( AppServiceService.INTENT_EXTRA_RESULT_RECEIVER,
+				resultReceiver );
+		intent.putExtra( AppServiceService.INTENT_COMMAND,
+				AppServiceService.INTENT_CHECK_SENSOR );
+		mContext.startService(intent);
+	}
+	
 	public void startTimeout( ResultReceiver resultReceiver ) {
 		Intent intent = new Intent(mContext, AppServiceService.class);
 		intent.putExtra( AppServiceService.INTENT_EXTRA_RESULT_RECEIVER,

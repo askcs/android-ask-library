@@ -42,11 +42,12 @@ public class AppServiceService extends IntentService {
 	public static final int INTENT_INSERT_INTO_RESTCACHE = 5;
 	public static final int INTENT_REGISTER_GCM_APPSERVICES = 6;
 	public static final int INTENT_UNREGISTER_GCM = 7;
-	public static final int INTENT_POST_NOTE = 8;
-	public static final int INTENT_POST_AFFECT = 9;
-	public static final int INTENT_START_TIMEOUT = 10;
-	public static final int INTENT_CHECK_TIMEOUT = 11;
-
+	public static final int INTENT_CHECK_SENSOR = 8;
+	public static final int INTENT_START_TIMEOUT = 9;
+	public static final int INTENT_CHECK_TIMEOUT = 10;
+	public static final int INTENT_POST_NOTE = 11;
+	public static final int INTENT_POST_AFFECT = 12;
+	
 	public static final int RESULTCODE_FAILED = -1;
 	public static final int RESULTCODE_NO_NETWORK = 0;
 	public static final int RESULTCODE_SUCCESFUL = 200;
@@ -77,7 +78,6 @@ public class AppServiceService extends IntentService {
 	 * as "value" one of the actions like INTENT_REGISTER, INTENT_LOGIN etc.
 	 * Additional parameters can be given by adding the INTENT_EXRA_ extras as
 	 * extra.
-	 * 
 	 */
 	@Override
 	protected void onHandleIntent(Intent intent) {
@@ -170,7 +170,33 @@ public class AppServiceService extends IntentService {
 				break;
 
 			// TODO wrong place for timeout specific code
+			
+			case INTENT_CHECK_SENSOR:
+				if (mRestInterface.checkSensors()) {
+					resultCode = RESULTCODE_SUCCESFUL;
+				} else {
+					resultCode = RESULTCODE_FAILED;
+				}
+				break;
+			
+			case INTENT_START_TIMEOUT:
+				if (mRestInterface.startTimeout()) {
+					resultCode = RESULTCODE_SUCCESFUL;
+				} else {
+					resultCode = RESULTCODE_FAILED;
+				}
+				break;
 				
+			case INTENT_CHECK_TIMEOUT:
+				result = mRestInterface.checkTimeout();
+				if ( result != null ) {
+					resultCode = RESULTCODE_SUCCESFUL;
+				} else {
+					resultCode = RESULTCODE_FAILED;
+				}
+				break;
+			
+			
 			case INTENT_POST_NOTE:
 				String note = intent.getStringExtra(INTENT_EXTRA_NOTE);
 				if (mRestInterface.postNote(note)) {
@@ -193,26 +219,7 @@ public class AppServiceService extends IntentService {
 					resultCode = RESULTCODE_FAILED;
 				}
 				break;
-
-			case INTENT_START_TIMEOUT:
-				if (mRestInterface.startTimeout()) {
-					resultCode = RESULTCODE_SUCCESFUL;
-				} else {
-					resultCode = RESULTCODE_FAILED;
-				}
-				break;
-				
-			case INTENT_CHECK_TIMEOUT:
-				result = mRestInterface.checkTimeout();
-				if ( result != null ) {
-					resultCode = RESULTCODE_SUCCESFUL;
-				} else {
-					resultCode = RESULTCODE_FAILED;
-				}
-				break;
-			
 			}
-			
 			
 			if (receiver != null) {
 				Bundle bundle = null;

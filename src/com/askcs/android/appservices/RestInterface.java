@@ -479,6 +479,10 @@ public class RestInterface {
 	
 	// TODO wrong place for timeout specific code
 	
+	public boolean checkSensors() {
+		throw new RuntimeException( "Not implemented in version 1" );
+	}
+	
 	public boolean startTimeout() {
 		throw new RuntimeException( "Not implemented in version 1" );
 	}

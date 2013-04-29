@@ -48,7 +48,7 @@ public class DialogFragment extends SherlockDialogFragment {
 	}
 	
 	public void callListenersNeutral() {
-		callListenersNegative( null );
+		callListenersNeutral( null );
 	}
 	
 	public void callListenersNeutral( Map<String, ? extends Object> data ) {

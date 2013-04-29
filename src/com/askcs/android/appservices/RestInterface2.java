@@ -45,6 +45,49 @@ public class RestInterface2 extends RestInterface {
 	// TODO make the "retry" logic available generally
 	
 	@Override
+	public boolean checkSensors() {
+		HttpURLConnection conn;
+		int tries = -1;
+		int response = -1;
+		URL url = null;
+		try {
+			do {
+				url = new URL( mHost + "/timeout/checkSensor" ); // TODO wrong place for appspecific prefix
+				conn = (HttpURLConnection) url.openConnection();
+				conn.setReadTimeout( 20000 /* milliseconds */);
+				conn.setConnectTimeout( 30000 /* milliseconds */);
+				conn.setRequestMethod( "GET" );
+				conn.setDoInput( true );
+				conn.setRequestProperty( "Cookie", "X-SESSION_ID="
+						+ getXSession() );
+				response = conn.getResponseCode();
+				Log.d( TAG, "The response is: " + response );
+				if ( response == 403 ) {
+					relogin();
+				} else if ( response == 200 ) {
+					InputStreamReader reader = new InputStreamReader( conn.getInputStream() );
+					CharBuffer buffer = CharBuffer.allocate( 256 );
+					StringBuffer body = new StringBuffer( 1024 );
+					int read = -1;
+					while ( (read = reader.read( buffer )) >= 0 ) {
+						buffer.rewind();
+						body.append( buffer.subSequence(0, read ) );
+						buffer.clear();
+					}
+					if ( ! body.toString().trim().toLowerCase().equals( "ok" ) ) {
+						Log.e( TAG, "Response from " + url + " was 200 but content was not ok" );
+					}
+				}
+			} while ( response == 403 && tries < 3 );
+			return true;
+		} catch ( IOException e ) {
+			Log.e( TAG, "Something wicked happened while GETting to " + url );
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	@Override
 	public boolean startTimeout() {
 		HttpURLConnection conn;
 		int tries = -1;
@@ -64,6 +107,19 @@ public class RestInterface2 extends RestInterface {
 				Log.d( TAG, "The response is: " + response );
 				if ( response == 403 ) {
 					relogin();
+				} else if ( response == 200 ) {
+					InputStreamReader reader = new InputStreamReader( conn.getInputStream() );
+					CharBuffer buffer = CharBuffer.allocate( 256 );
+					StringBuffer body = new StringBuffer( 1024 );
+					int read = -1;
+					while ( (read = reader.read( buffer )) >= 0 ) {
+						buffer.rewind();
+						body.append( buffer.subSequence(0, read ) );
+						buffer.clear();
+					}
+					if ( ! body.toString().trim().toLowerCase().equals( "ok" ) ) {
+						Log.e( TAG, "Response from " + url + " was 200 but content was not ok" );
+					}
 				}
 			} while ( response == 403 && tries < 3 );
 			return true;
@@ -99,15 +155,15 @@ public class RestInterface2 extends RestInterface {
 				} else if ( response == 200 ) {
 					InputStreamReader reader = new InputStreamReader( conn.getInputStream() );
 					CharBuffer buffer = CharBuffer.allocate( 256 );
-					StringBuffer json = new StringBuffer( 1024 );
+					StringBuffer body = new StringBuffer( 1024 );
 					int read = -1;
 					while ( (read = reader.read( buffer )) >= 0 ) {
 						buffer.rewind();
-						json.append( buffer.subSequence(0, read ) );
+						body.append( buffer.subSequence(0, read ) );
 						buffer.clear();
 					}
 					// Log.i( TAG, "checkTimeout returned: " + json.length() + " : " + json.toString() );
-					return json.toString();
+					return body.toString();
 				}
 			} while ( response == 403 && tries < 3 );
 			return null;

@@ -121,9 +121,40 @@ public class RestInterface {
 			return responseCode;
 		}
 	}
+	
+	public int logout() {
+		int responseCode = registerGcmKey( "" ) ? 200 : 500; // TODO
+		if ( responseCode != 200 ) {
+			return responseCode;
+		}
+		
+		responseCode = logoutConnection();
+		if ( responseCode != 200 ) {
+			return responseCode;
+		} else {
+			// Successfully logged out
+			SharedPreferences prefs = PreferenceManager
+					.getDefaultSharedPreferences( mContext );
+			Editor editor = prefs.edit();
+			// editor.putString( Prefs.EMAIL, "" );
+			// editor.putString( Prefs.PASSWORD, "" );
+			editor.remove( Prefs.SESSION_ID );
+			editor.commit();
+
+			// register for GCM messages
+			GcmManager gcmManager = new GcmManager( mContext );
+			gcmManager.unregister();
+
+			return responseCode;
+		}
+	}
 
 	protected String getLoginURL( String email, String password ) {
 		return mHost + "/login?" + "uuid=" + email + "&pass=" + password;
+	}
+	
+	protected String getLogoutURL() {
+		return mHost + "/logout";
 	}
 
 	/**
@@ -187,6 +218,33 @@ public class RestInterface {
 				// Unexpected reply
 				return -1;
 			}
+		} catch ( SocketTimeoutException e ) {
+			e.printStackTrace();
+			return 0;
+		} catch ( ConnectException e ) {
+			e.printStackTrace();
+			return 0;
+
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			return -1;
+		}
+
+	}
+	
+	private int logoutConnection() {
+		InputStream inputStream = null;
+		try {
+			String xSession;
+			URL url = new URL( getLogoutURL() );
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setReadTimeout( 20000 /* milliseconds */);
+			conn.setConnectTimeout( 20000 /* milliseconds */);
+			conn.setRequestMethod( "GET" );
+			conn.connect();
+			int responseCode = conn.getResponseCode();
+			Log.d( TAG, "logoutConnection(): The response is: " + responseCode );
+			return responseCode;
 		} catch ( SocketTimeoutException e ) {
 			e.printStackTrace();
 			return 0;

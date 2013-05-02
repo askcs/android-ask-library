@@ -37,7 +37,8 @@ public class AppServiceService extends IntentService {
 
 	public static final int INTENT_REGISTER = 0;
 	public static final int INTENT_LOGIN = 1;
-	public static final int INTENT_RESET_PW = 2;
+	public static final int INTENT_LOGOUT = 2;
+	public static final int INTENT_RESET_PW = 3;
 	public static final int INTENT_TRANSMIT_AND_GET_DATA = 4;
 	public static final int INTENT_INSERT_INTO_RESTCACHE = 5;
 	public static final int INTENT_REGISTER_GCM_APPSERVICES = 6;
@@ -130,7 +131,11 @@ public class AppServiceService extends IntentService {
 				}
 
 				break;
+				
+			case INTENT_LOGOUT:
+				resultCode = mRestInterface.logout();
 
+				break;
 			case INTENT_RESET_PW:
 				String resetPwEmail = intent.getStringExtra(INTENT_EXTRA_EMAIL);
 				String resetPwPath = intent
@@ -165,8 +170,11 @@ public class AppServiceService extends IntentService {
 				break;
 
 			case INTENT_UNREGISTER_GCM:
-				GcmManager gcmManager = new GcmManager(this);
-				gcmManager.unregister();
+				if (mRestInterface.registerGcmKey( "" )) {
+					Log.v(TAG, "Successful deregistration");
+					GcmManager gcmManager = new GcmManager(this);
+					gcmManager.unregister();
+				}
 				break;
 
 			// TODO wrong place for timeout specific code

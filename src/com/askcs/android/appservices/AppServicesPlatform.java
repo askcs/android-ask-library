@@ -100,6 +100,15 @@ public class AppServicesPlatform {
 		intent.putExtra(AppServiceService.INTENT_EXTRA_PASSWORD, password);
 		mContext.startService(intent);
 	}
+	
+	public void logout(ResultReceiver resultReceiver) {
+		Intent intent = new Intent(mContext, AppServiceService.class);
+		intent.putExtra(AppServiceService.INTENT_EXTRA_RESULT_RECEIVER,
+				resultReceiver);
+		intent.putExtra(AppServiceService.INTENT_COMMAND,
+				AppServiceService.INTENT_LOGOUT);
+		mContext.startService(intent);
+	}
 
 	
 	// TODO wrong place for timeout specific code

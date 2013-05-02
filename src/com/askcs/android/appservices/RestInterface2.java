@@ -30,6 +30,11 @@ public class RestInterface2 extends RestInterface {
 		return mHost + "/login?" + "username=" + email + "&password="
 				+ password;
 	}
+	
+	@Override
+	protected String getLogoutURL() {
+		return mHost + "/logout";
+	}
 
 	@Override
 	protected String getGcmRegisterURL( String key ) {

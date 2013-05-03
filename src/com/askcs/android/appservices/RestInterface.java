@@ -3,8 +3,8 @@ package com.askcs.android.appservices;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -23,6 +23,7 @@ import com.askcs.android.data.AppServiceSqlStorage;
 import com.askcs.android.gcm.GcmManager;
 import com.askcs.android.model.Message;
 import com.askcs.android.util.Digest;
+import com.askcs.android.util.Errors;
 import com.askcs.android.util.Prefs;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -93,16 +94,17 @@ public class RestInterface {
 		String password = prefs.getString( Prefs.PASSWORD, null );
 
 		int responseCode = loginConnection( email, password );
-		if ( responseCode == 200 ) {
+		if ( responseCode == Errors.OK ) {
 			prefs.edit().putString( Prefs.SESSION_ID, mXSession ).commit();
 			Log.i( TAG, mXSession );
+			return Errors.OK;
 		}
 		return responseCode;
 	}
 
 	public int login( String username, String password ) {
 		int responseCode = loginConnection( username, password );
-		if ( responseCode != 200 ) {
+		if ( responseCode != Errors.OK ) {
 			return responseCode;
 		} else {
 			// Successfully logged in and authenticated: store credentials
@@ -123,22 +125,25 @@ public class RestInterface {
 	}
 	
 	public int logout() {
-		int responseCode = registerGcmKey( "" ) ? 200 : 500; // TODO
-		if ( responseCode != 200 ) {
+		int responseCode = registerGcmKey( "" ) ? Errors.OK : Errors.ERROR_TODO; // TODO
+		if ( responseCode != Errors.OK ) {
 			return responseCode;
 		}
 		
 		responseCode = logoutConnection();
-		if ( responseCode != 200 ) {
+		if ( responseCode != Errors.OK ) {
 			return responseCode;
 		} else {
 			// Successfully logged out
 			SharedPreferences prefs = PreferenceManager
 					.getDefaultSharedPreferences( mContext );
+			Log.i(TAG, "before session id " + prefs.contains( Prefs.SESSION_ID ) );
 			Editor editor = prefs.edit();
 			// editor.putString( Prefs.EMAIL, "" );
 			// editor.putString( Prefs.PASSWORD, "" );
 			editor.remove( Prefs.SESSION_ID );
+			Log.i(TAG, "after session id " + prefs.contains( Prefs.SESSION_ID ) );
+			
 			editor.commit();
 
 			// register for GCM messages
@@ -169,9 +174,8 @@ public class RestInterface {
 	private int loginConnection( String email, String password ) {
 		InputStream inputStream = null;
 		if ( email == null || password == null ) {
-
 			// Invalid Credentials
-			return 400;
+			return Errors.ERROR_BADCREDENTIALS;
 		}
 		password = Digest.hashPassword( password );
 		try {
@@ -186,9 +190,14 @@ public class RestInterface {
 			conn.connect();
 			int responseCode = conn.getResponseCode();
 			Log.d( TAG, "loginConnection(): The response is: " + responseCode );
-			if ( responseCode != 200 ) {
-				return responseCode;
+			
+			if ( responseCode == 403 || responseCode == 400 ) {
+				return Errors.ERROR_BADCREDENTIALS;
 			}
+			if ( responseCode != 200 ) {
+				return Errors.ERROR_REMOTE;
+			}
+			
 			inputStream = conn.getInputStream();
 
 			// Parse the stream as json
@@ -213,29 +222,26 @@ public class RestInterface {
 
 				mXSession = xSession;
 
-				return responseCode;
+				return Errors.OK;
 			} else {
 				// Unexpected reply
-				return -1;
+				return Errors.ERROR_REMOTE;
 			}
 		} catch ( SocketTimeoutException e ) {
 			e.printStackTrace();
-			return 0;
-		} catch ( ConnectException e ) {
+			return Errors.ERROR_TIMEOUT;
+		} catch ( SocketException e ) {
 			e.printStackTrace();
-			return 0;
-
+			return Errors.ERROR_NO_CONNECTION;
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			return -1;
+			return Errors.ERROR_LOCAL;
 		}
 
 	}
 	
 	private int logoutConnection() {
-		InputStream inputStream = null;
 		try {
-			String xSession;
 			URL url = new URL( getLogoutURL() );
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setReadTimeout( 20000 /* milliseconds */);
@@ -244,17 +250,16 @@ public class RestInterface {
 			conn.connect();
 			int responseCode = conn.getResponseCode();
 			Log.d( TAG, "logoutConnection(): The response is: " + responseCode );
-			return responseCode;
+			return responseCode == 200 ? Errors.OK : Errors.ERROR_REMOTE;
 		} catch ( SocketTimeoutException e ) {
 			e.printStackTrace();
-			return 0;
-		} catch ( ConnectException e ) {
+			return Errors.ERROR_TIMEOUT;
+		} catch ( SocketException e ) {
 			e.printStackTrace();
-			return 0;
-
+			return Errors.ERROR_NO_CONNECTION;
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			return -1;
+			return Errors.ERROR_LOCAL;
 		}
 
 	}
@@ -556,5 +561,7 @@ public class RestInterface {
 	public boolean postAffect( double pleasure, double arousal, double dominance ) {
 		throw new RuntimeException( "Not implemented in version 1" );
 	}
+	
+	
 	
 }

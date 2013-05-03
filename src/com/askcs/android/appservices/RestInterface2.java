@@ -57,6 +57,7 @@ public class RestInterface2 extends RestInterface {
 		URL url = null;
 		try {
 			do {
+				tries++;
 				url = new URL( mHost + "/timeout/checkSensor" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setReadTimeout( 20000 /* milliseconds */);
@@ -81,6 +82,7 @@ public class RestInterface2 extends RestInterface {
 					}
 					if ( ! body.toString().trim().toLowerCase().equals( "ok" ) ) {
 						Log.e( TAG, "Response from " + url + " was 200 but content was not ok" );
+						return false;
 					}
 				}
 			} while ( response == 403 && tries < 3 );
@@ -100,6 +102,7 @@ public class RestInterface2 extends RestInterface {
 		URL url = null;
 		try {
 			do {
+				tries++;
 				url = new URL( mHost + "/timeout/start" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setReadTimeout( 20000 /* milliseconds */);
@@ -124,6 +127,7 @@ public class RestInterface2 extends RestInterface {
 					}
 					if ( ! body.toString().trim().toLowerCase().equals( "ok" ) ) {
 						Log.e( TAG, "Response from " + url + " was 200 but content was not ok" );
+						return false;
 					}
 				}
 			} while ( response == 403 && tries < 3 );
@@ -144,6 +148,7 @@ public class RestInterface2 extends RestInterface {
 		URL url = null;
 		try {
 			do {
+				tries++;
 				url = new URL( mHost + "/timeout" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setReadTimeout( 20000 /* milliseconds */);
@@ -189,6 +194,7 @@ public class RestInterface2 extends RestInterface {
 		URL url = null;
 		try {
 			do {
+				tries++;
 				url = new URL( mHost + "/timeout/notes" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setReadTimeout( 20000 /* milliseconds */);
@@ -224,6 +230,7 @@ public class RestInterface2 extends RestInterface {
 		URL url = null;
 		try {
 			do {
+				tries++;
 				url = new URL( mHost + "/timeout/emotion" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setReadTimeout( 20000 /* milliseconds */);

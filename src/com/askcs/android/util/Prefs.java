@@ -10,6 +10,8 @@ public class Prefs {
     
     static public final String TAB = "selected_tab";
     
+    static public final String SENSORS = "sensors";
+    
     
     /**
      * Preference key for boolean flag to signal rhythm and substance data initialized

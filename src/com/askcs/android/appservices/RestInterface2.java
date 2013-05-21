@@ -126,7 +126,7 @@ public class RestInterface2 extends RestInterface {
 						buffer.clear();
 					}
 					if ( ! body.toString().trim().toLowerCase().equals( "ok" ) ) {
-						Log.e( TAG, "Response from " + url + " was 200 but content was not ok" );
+						Log.e( TAG, "Response from " + url + " was 200 but content was not ok: " + body );
 						return false;
 					}
 				}

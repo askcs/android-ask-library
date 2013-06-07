@@ -60,7 +60,7 @@ public class RestInterface2 extends RestInterface {
 				tries++;
 				url = new URL( mHost + "/timeout/checkSensor" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
-				conn.setReadTimeout( 20000 /* milliseconds */);
+				conn.setReadTimeout( 30000 /* milliseconds */);
 				conn.setConnectTimeout( 30000 /* milliseconds */);
 				conn.setRequestMethod( "GET" );
 				conn.setDoInput( true );
@@ -105,7 +105,7 @@ public class RestInterface2 extends RestInterface {
 				tries++;
 				url = new URL( mHost + "/timeout/start" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
-				conn.setReadTimeout( 20000 /* milliseconds */);
+				conn.setReadTimeout( 30000 /* milliseconds */);
 				conn.setConnectTimeout( 30000 /* milliseconds */);
 				conn.setRequestMethod( "GET" );
 				conn.setDoInput( true );
@@ -151,7 +151,7 @@ public class RestInterface2 extends RestInterface {
 				tries++;
 				url = new URL( mHost + "/timeout" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
-				conn.setReadTimeout( 20000 /* milliseconds */);
+				conn.setReadTimeout( 30000 /* milliseconds */);
 				conn.setConnectTimeout( 30000 /* milliseconds */);
 				conn.setRequestMethod( "GET" );
 				conn.setDoInput( true );
@@ -197,7 +197,7 @@ public class RestInterface2 extends RestInterface {
 				tries++;
 				url = new URL( mHost + "/timeout/notes" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
-				conn.setReadTimeout( 20000 /* milliseconds */);
+				conn.setReadTimeout( 30000 /* milliseconds */);
 				conn.setConnectTimeout( 30000 /* milliseconds */);
 				conn.setRequestMethod( "POST" );
 				conn.setDoInput( true );
@@ -233,7 +233,7 @@ public class RestInterface2 extends RestInterface {
 				tries++;
 				url = new URL( mHost + "/timeout/emotion" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
-				conn.setReadTimeout( 20000 /* milliseconds */);
+				conn.setReadTimeout( 30000 /* milliseconds */);
 				conn.setConnectTimeout( 30000 /* milliseconds */);
 				conn.setRequestMethod( "POST" );
 				conn.setDoInput( true );

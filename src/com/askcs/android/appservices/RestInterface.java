@@ -44,14 +44,14 @@ public class RestInterface {
 	protected RestCache mRestCache;
 	protected MessageReceiver mMessageReceiver;
 
-	public static RestInterface getInstance( Context context ) {
-		String version = context.getString( R.string.appservice_version );
-		if ( version.equals( "1" ) ) {
-			return new RestInterface( context );
-		} else if ( version.equals( "2" ) ) {
-			return new RestInterface2( context );
+	public static RestInterface getInstance(Context context) {
+		String version = context.getString(R.string.appservice_version);
+		if (version.equals("1")) {
+			return new RestInterface(context);
+		} else if (version.equals("2")) {
+			return new RestInterface2(context);
 		} else {
-			throw new RuntimeException( "Unsupported appservice version" );
+			throw new RuntimeException("Unsupported appservice version");
 		}
 	}
 
@@ -60,14 +60,14 @@ public class RestInterface {
 	 * 
 	 * @param context
 	 */
-	protected RestInterface( Context context ) {
+	protected RestInterface(Context context) {
 		mContext = context;
-		mHost = context.getString( R.string.appservice_host );
-		mAppServiceSqlStorage = AppServiceSqlStorage.getInstance( mContext );
-		mXSession = PreferenceManager.getDefaultSharedPreferences( mContext )
-				.getString( Prefs.SESSION_ID, "" );
-		mRestCache = new RestCache( mContext, this );
-		mMessageReceiver = new MessageReceiver( mContext, this );
+		mHost = context.getString(R.string.appservice_host);
+		mAppServiceSqlStorage = AppServiceSqlStorage.getInstance(mContext);
+		mXSession = PreferenceManager.getDefaultSharedPreferences(mContext)
+				.getString(Prefs.SESSION_ID, "");
+		mRestCache = new RestCache(mContext, this);
+		mMessageReceiver = new MessageReceiver(mContext, this);
 	}
 
 	public String getHost() {
@@ -89,75 +89,75 @@ public class RestInterface {
 	 */
 	public int relogin() {
 		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences( mContext );
-		String email = prefs.getString( Prefs.EMAIL, null );
-		String password = prefs.getString( Prefs.PASSWORD, null );
+				.getDefaultSharedPreferences(mContext);
+		String email = prefs.getString(Prefs.EMAIL, null);
+		String password = prefs.getString(Prefs.PASSWORD, null);
 
-		int responseCode = loginConnection( email, password );
-		if ( responseCode == Errors.OK ) {
-			prefs.edit().putString( Prefs.SESSION_ID, mXSession ).commit();
-			Log.i( TAG, mXSession );
+		int responseCode = loginConnection(email, password);
+		if (responseCode == Errors.OK) {
+			prefs.edit().putString(Prefs.SESSION_ID, mXSession).commit();
+			Log.i(TAG, mXSession);
 			return Errors.OK;
 		}
 		return responseCode;
 	}
 
-	public int login( String username, String password ) {
-		int responseCode = loginConnection( username, password );
-		if ( responseCode != Errors.OK ) {
+	public int login(String username, String password) {
+		int responseCode = loginConnection(username, password);
+		if (responseCode != Errors.OK) {
 			return responseCode;
 		} else {
 			// Successfully logged in and authenticated: store credentials
 			SharedPreferences prefs = PreferenceManager
-					.getDefaultSharedPreferences( mContext );
+					.getDefaultSharedPreferences(mContext);
 			Editor editor = prefs.edit();
-			editor.putString( Prefs.EMAIL, username );
-			editor.putString( Prefs.PASSWORD, password );
-			editor.putString( Prefs.SESSION_ID, mXSession );
+			editor.putString(Prefs.EMAIL, username);
+			editor.putString(Prefs.PASSWORD, password);
+			editor.putString(Prefs.SESSION_ID, mXSession);
 			editor.commit();
 
 			// register for GCM messages
-			GcmManager gcmManager = new GcmManager( mContext );
+			GcmManager gcmManager = new GcmManager(mContext);
 			gcmManager.register();
 
 			return responseCode;
 		}
 	}
-	
+
 	public int logout() {
-		int responseCode = registerGcmKey( "" ) ? Errors.OK : Errors.ERROR_TODO; // TODO
-		if ( responseCode != Errors.OK ) {
+		int responseCode = registerGcmKey("") ? Errors.OK : Errors.ERROR_TODO; // TODO
+		if (responseCode != Errors.OK) {
 			return responseCode;
 		}
-		
+
 		responseCode = logoutConnection();
-		if ( responseCode != Errors.OK ) {
+		if (responseCode != Errors.OK) {
 			return responseCode;
 		} else {
 			// Successfully logged out
 			SharedPreferences prefs = PreferenceManager
-					.getDefaultSharedPreferences( mContext );
-			Log.i(TAG, "before session id " + prefs.contains( Prefs.SESSION_ID ) );
+					.getDefaultSharedPreferences(mContext);
+			Log.i(TAG, "before session id " + prefs.contains(Prefs.SESSION_ID));
 			Editor editor = prefs.edit();
 			// editor.putString( Prefs.EMAIL, "" );
 			// editor.putString( Prefs.PASSWORD, "" );
-			editor.remove( Prefs.SESSION_ID );
-			Log.i(TAG, "after session id " + prefs.contains( Prefs.SESSION_ID ) );
-			
+			editor.remove(Prefs.SESSION_ID);
+			Log.i(TAG, "after session id " + prefs.contains(Prefs.SESSION_ID));
+
 			editor.commit();
 
 			// register for GCM messages
-			GcmManager gcmManager = new GcmManager( mContext );
+			GcmManager gcmManager = new GcmManager(mContext);
 			gcmManager.unregister();
 
 			return responseCode;
 		}
 	}
 
-	protected String getLoginURL( String email, String password ) {
+	protected String getLoginURL(String email, String password) {
 		return mHost + "/login?" + "uuid=" + email + "&pass=" + password;
 	}
-	
+
 	protected String getLogoutURL() {
 		return mHost + "/logout";
 	}
@@ -171,52 +171,54 @@ public class RestInterface {
 	 *            unhashed password
 	 * @return HTTP response code
 	 */
-	private int loginConnection( String email, String password ) {
+	private int loginConnection(String email, String password) {
 		InputStream inputStream = null;
-		if ( email == null || password == null ) {
+		if (email == null || password == null) {
 			// Invalid Credentials
 			return Errors.ERROR_BADCREDENTIALS;
 		}
-		password = Digest.hashPassword( password );
+		password = Digest.hashPassword(password);
 		try {
 			String xSession;
-			URL url = new URL( getLoginURL( email, password ) );
+			URL url = new URL(getLoginURL(email, password));
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setReadTimeout( 20000 /* milliseconds */);
-			conn.setConnectTimeout( 20000 /* milliseconds */);
-			conn.setRequestMethod( "GET" );
-			conn.setDoInput( true );
+			conn.setReadTimeout(30000 /* milliseconds */);
+			conn.setConnectTimeout(30000 /* milliseconds */);
+			conn.setRequestMethod("GET");
+			conn.setDoInput(true);
 			// Starts the query
 			conn.connect();
 			int responseCode = conn.getResponseCode();
-			Log.d( TAG, "loginConnection(): The response is: " + responseCode );
-			
-			if ( responseCode == 403 || responseCode == 400 ) {
+			Log.d(TAG, "loginConnection(): The response is: " + responseCode);
+
+			if (responseCode == 403 || responseCode == 400) {
 				return Errors.ERROR_BADCREDENTIALS;
 			}
-			if ( responseCode != 200 ) {
+			if (responseCode != 200) {
 				return Errors.ERROR_REMOTE;
 			}
-			
+
 			inputStream = conn.getInputStream();
 
 			// Parse the stream as json
 			JsonFactory jfactory = new JsonFactory();
-			JsonParser jParser = jfactory.createJsonParser( inputStream ); // deprecated, what now?
+			JsonParser jParser = jfactory.createJsonParser(inputStream); // deprecated,
+																			// what
+																			// now?
 			// skip over the first "{" token
 			jParser.nextToken();
 			jParser.nextToken();
 			// Verify if it is the expected field
-			if ( jParser.getCurrentName().equals( "X-SESSION_ID" ) ) {
+			if (jParser.getCurrentName().equals("X-SESSION_ID")) {
 				jParser.nextToken();
 				xSession = jParser.getText();
 
 				jParser.close();
-				if ( inputStream != null ) {
+				if (inputStream != null) {
 					inputStream.close();
 				}
 
-				if ( xSession == null || xSession.equals( "" ) ) {
+				if (xSession == null || xSession.equals("")) {
 					return -1;
 				}
 
@@ -227,37 +229,37 @@ public class RestInterface {
 				// Unexpected reply
 				return Errors.ERROR_REMOTE;
 			}
-		} catch ( SocketTimeoutException e ) {
+		} catch (SocketTimeoutException e) {
 			e.printStackTrace();
 			return Errors.ERROR_TIMEOUT;
-		} catch ( SocketException e ) {
+		} catch (SocketException e) {
 			e.printStackTrace();
 			return Errors.ERROR_NO_CONNECTION;
-		} catch ( Exception e ) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return Errors.ERROR_LOCAL;
 		}
 
 	}
-	
+
 	private int logoutConnection() {
 		try {
-			URL url = new URL( getLogoutURL() );
+			URL url = new URL(getLogoutURL());
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setReadTimeout( 20000 /* milliseconds */);
-			conn.setConnectTimeout( 20000 /* milliseconds */);
-			conn.setRequestMethod( "GET" );
+			conn.setReadTimeout(30000 /* milliseconds */);
+			conn.setConnectTimeout(30000 /* milliseconds */);
+			conn.setRequestMethod("GET");
 			conn.connect();
 			int responseCode = conn.getResponseCode();
-			Log.d( TAG, "logoutConnection(): The response is: " + responseCode );
+			Log.d(TAG, "logoutConnection(): The response is: " + responseCode);
 			return responseCode == 200 ? Errors.OK : Errors.ERROR_REMOTE;
-		} catch ( SocketTimeoutException e ) {
+		} catch (SocketTimeoutException e) {
 			e.printStackTrace();
 			return Errors.ERROR_TIMEOUT;
-		} catch ( SocketException e ) {
+		} catch (SocketException e) {
 			e.printStackTrace();
 			return Errors.ERROR_NO_CONNECTION;
-		} catch ( Exception e ) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return Errors.ERROR_LOCAL;
 		}
@@ -273,8 +275,8 @@ public class RestInterface {
 	 *            Unhashed password
 	 * @return The session ID, or null if the registration failed
 	 */
-	public int register( String email, String password ) {
-		return register( email, password, null );
+	public int register(String email, String password) {
+		return register(email, password, null);
 	}
 
 	/**
@@ -288,23 +290,23 @@ public class RestInterface {
 	 *            Name of the user
 	 * @return The session ID, or null if the registration failed
 	 */
-	public int register( String email, String password, String name ) {
-		int responseCode = registerConnection( email, password, name );
-		if ( responseCode != 200 ) {
+	public int register(String email, String password, String name) {
+		int responseCode = registerConnection(email, password, name);
+		if (responseCode != 200) {
 			return responseCode;
 		} else {
 			// Successfully logged in and authenticated!
 			SharedPreferences prefs = PreferenceManager
-					.getDefaultSharedPreferences( mContext );
+					.getDefaultSharedPreferences(mContext);
 			Editor editor = prefs.edit();
-			editor.putString( Prefs.EMAIL, email );
-			editor.putString( Prefs.PASSWORD, password );
-			editor.putString( Prefs.SESSION_ID, mXSession );
+			editor.putString(Prefs.EMAIL, email);
+			editor.putString(Prefs.PASSWORD, password);
+			editor.putString(Prefs.SESSION_ID, mXSession);
 			editor.commit();
 
-            // register for GCM messages
-            GcmManager gcmManager = new GcmManager(mContext);
-            gcmManager.register();
+			// register for GCM messages
+			GcmManager gcmManager = new GcmManager(mContext);
+			gcmManager.register();
 
 			return responseCode;
 		}
@@ -323,9 +325,9 @@ public class RestInterface {
 	 *            First name
 	 * @return The session ID, or null if the registration failed
 	 */
-	public int register( String email, String password, String surname,
-			String firstName ) {
-		return register( email, password, firstName + " " + surname );
+	public int register(String email, String password, String surname,
+			String firstName) {
+		return register(email, password, firstName + " " + surname);
 	}
 
 	/**
@@ -337,51 +339,53 @@ public class RestInterface {
 	 * @param name
 	 * @return The HTTP response code, or -1 if the call failed
 	 */
-	private int registerConnection( String uuid, String password, String name ) {
+	private int registerConnection(String uuid, String password, String name) {
 		InputStream inputStream = null;
-		password = Digest.hashPassword( password );
+		password = Digest.hashPassword(password);
 
 		try {
 			String xSession;
 			String urlString = mHost + "/register?" + "uuid="
-					+ URLEncoder.encode( uuid, "UTF-8" ) + "&pass="
-					+ URLEncoder.encode( password, "UTF-8" );
-			if ( null != name ) {
+					+ URLEncoder.encode(uuid, "UTF-8") + "&pass="
+					+ URLEncoder.encode(password, "UTF-8");
+			if (null != name) {
 				// name is optional
-				urlString += "&name=" + URLEncoder.encode( name, "UTF-8" );
+				urlString += "&name=" + URLEncoder.encode(name, "UTF-8");
 			}
-			URL url = new URL( urlString );
+			URL url = new URL(urlString);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setReadTimeout( 30000 /* milliseconds */);
-			conn.setConnectTimeout( 30000 /* milliseconds */);
-			conn.setRequestMethod( "GET" );
-			conn.setDoInput( true );
+			conn.setReadTimeout(30000 /* milliseconds */);
+			conn.setConnectTimeout(30000 /* milliseconds */);
+			conn.setRequestMethod("GET");
+			conn.setDoInput(true);
 			// Starts the query
 			conn.connect();
 			int responseCode = conn.getResponseCode();
-			if ( responseCode != 200 ) {
+			if (responseCode != 200) {
 				return responseCode;
 			}
-			Log.d( TAG, "register(): The response is: " + responseCode );
+			Log.d(TAG, "register(): The response is: " + responseCode);
 			inputStream = conn.getInputStream();
 
 			// Parse the stream as json
 			JsonFactory jfactory = new JsonFactory();
-			JsonParser jParser = jfactory.createJsonParser( inputStream ); // deprecated, what now?
+			JsonParser jParser = jfactory.createJsonParser(inputStream); // deprecated,
+																			// what
+																			// now?
 			// skip over the first "{" token
 			jParser.nextToken();
 			jParser.nextToken();
 			// Verify if it is the expected field
-			if ( jParser.getCurrentName().equals( "X-SESSION_ID" ) ) {
+			if (jParser.getCurrentName().equals("X-SESSION_ID")) {
 				jParser.nextToken();
 				xSession = jParser.getText();
 
 				jParser.close();
-				if ( inputStream != null ) {
+				if (inputStream != null) {
 					inputStream.close();
 				}
 
-				if ( xSession != null && !xSession.equals( "" ) ) {
+				if (xSession != null && !xSession.equals("")) {
 					mXSession = xSession;
 					return responseCode;
 				}
@@ -390,7 +394,7 @@ public class RestInterface {
 				// Unexpected reply
 				return -1;
 			}
-		} catch ( Exception e ) {
+		} catch (Exception e) {
 			e.printStackTrace();
 
 		}
@@ -408,9 +412,9 @@ public class RestInterface {
 	 *            URL where the user can reset his password, to put in the email
 	 * @return The HTTP response code, or -1 if the call failed
 	 */
-	public int resetPassword( String email, String callbackUrl ) {
-		Log.v( TAG, "Reset password" );
-		return resetPasswordConnection( email, callbackUrl );
+	public int resetPassword(String email, String callbackUrl) {
+		Log.v(TAG, "Reset password");
+		return resetPasswordConnection(email, callbackUrl);
 	}
 
 	/**
@@ -420,34 +424,34 @@ public class RestInterface {
 	 * @param path
 	 * @return The HTTP response code, or -1 if the call failed
 	 */
-	private int resetPasswordConnection( String uuid, String path ) {
+	private int resetPasswordConnection(String uuid, String path) {
 
 		try {
 			String urlString = mHost + "/passwordReset?" + "uuid="
-					+ URLEncoder.encode( uuid, "UTF-8" ) + "&path="
-					+ URLEncoder.encode( path, "UTF-8" );
-			URL url = new URL( urlString );
+					+ URLEncoder.encode(uuid, "UTF-8") + "&path="
+					+ URLEncoder.encode(path, "UTF-8");
+			URL url = new URL(urlString);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setReadTimeout( 30000 /* milliseconds */);
-			conn.setConnectTimeout( 30000 /* milliseconds */);
-			conn.setRequestMethod( "GET" );
+			conn.setReadTimeout(30000 /* milliseconds */);
+			conn.setConnectTimeout(30000 /* milliseconds */);
+			conn.setRequestMethod("GET");
 			// Starts the query
 			conn.connect();
 			int responseCode = conn.getResponseCode();
-			Log.v( TAG, "resetPassword(): The response is: " + responseCode );
+			Log.v(TAG, "resetPassword(): The response is: " + responseCode);
 			return responseCode;
 
-		} catch ( Exception e ) {
-			Log.e( TAG, "Failed to reset password!", e );
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to reset password!", e);
 			return -1;
 		}
 	}
 
-	protected String getGcmRegisterURL( String key ) {
+	protected String getGcmRegisterURL(String key) {
 		return mHost + "/resources?tags={\"C2DMKey\":\"" + key + "\"}";
 	}
 
-	protected String getGcmRegisterBody( String key ) {
+	protected String getGcmRegisterBody(String key) {
 		return "";
 	}
 
@@ -457,7 +461,7 @@ public class RestInterface {
 	 * @param key
 	 * @return returns true if successful
 	 */
-	public boolean registerGcmKey( String key ) {
+	public boolean registerGcmKey(String key) {
 		int tries = -1;
 		int response;
 		HttpURLConnection conn;
@@ -466,39 +470,43 @@ public class RestInterface {
 
 			// try it and try to login if it fails
 			do {
-				tries++;
-				URL url = new URL( getGcmRegisterURL( key ) );
-				conn = (HttpURLConnection) url.openConnection();
-				conn.setReadTimeout( 10000 /* milliseconds */);
-				conn.setConnectTimeout( 15000 /* milliseconds */);
-				conn.setRequestMethod( "POST" );
-				conn.setDoInput( true );
-				conn.setDoOutput( true );
-				conn.setRequestProperty( "Cookie", "X-SESSION_ID="
-						+ getXSession() );
-				OutputStreamWriter out = new OutputStreamWriter(
-						conn.getOutputStream() );
-				String body = getGcmRegisterBody( key );
-				conn.connect();
-				out.write( body );
-				out.close();
-				response = conn.getResponseCode();
-				Log.d( TAG, "registerGcmKey: The response is: " + response );
-				if ( response == 403 ) {
-					relogin();
+				try {
+					tries++;
+					URL url = new URL(getGcmRegisterURL(key));
+					conn = (HttpURLConnection) url.openConnection();
+					conn.setReadTimeout(30000 /* milliseconds */);
+					conn.setConnectTimeout(30000 /* milliseconds */);
+					conn.setRequestMethod("POST");
+					conn.setDoInput(true);
+					conn.setDoOutput(true);
+					conn.setRequestProperty("Cookie", "X-SESSION_ID="
+							+ getXSession());
+					OutputStreamWriter out = new OutputStreamWriter(
+							conn.getOutputStream());
+					String body = getGcmRegisterBody(key);
+					conn.connect();
+					out.write(body);
+					out.close();
+					response = conn.getResponseCode();
+					Log.d(TAG, "registerGcmKey: The response is: " + response);
+					if (response == 403) {
+						relogin();
+					}
+					Log.i(TAG, tries + "");
+				} catch (SocketTimeoutException e) {
+					response = 403; // try again
 				}
-				Log.i( TAG, tries + "" );
-			} while ( response == 403 && tries < 3 );
+			} while (response == 403 && tries < 3);
 
-			if ( response != 200 ) {
+			if (response != 200) {
 				// failed
 				return false;
 			}
 
 			return true;
 
-		} catch ( IOException e ) {
-			Log.w( TAG, "Failed to register GCM key", e );
+		} catch (IOException e) {
+			Log.w(TAG, "Failed to register GCM key", e);
 			return false;
 		}
 	}
@@ -514,54 +522,51 @@ public class RestInterface {
 	 */
 	// TODO: Fix deprecated call to RestCache
 	@SuppressWarnings("deprecation")
-	public void update( Message message ) {
+	public void update(Message message) {
 		ContentValues contentValues = new ContentValues();
-		contentValues.put( AppServiceSqlStorage.C_RESTCACHE_ACTION, "PUT" );
+		contentValues.put(AppServiceSqlStorage.C_RESTCACHE_ACTION, "PUT");
 		try {
-			contentValues.put( AppServiceSqlStorage.C_RESTCACHE_CONTENT,
-					message.toJson().toString() );
+			contentValues.put(AppServiceSqlStorage.C_RESTCACHE_CONTENT, message
+					.toJson().toString());
 
-		} catch ( JSONException e ) {
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		contentValues.put( AppServiceSqlStorage.C_RESTCACHE_URL, mHost
-				+ MessageReceiver.PATH );
+		contentValues.put(AppServiceSqlStorage.C_RESTCACHE_URL, mHost
+				+ MessageReceiver.PATH);
 
-		mAppServiceSqlStorage.updateById( message.toContentValues(),
-				AppServiceSqlStorage.T_MESSAGE, message.getId() );
+		mAppServiceSqlStorage.updateById(message.toContentValues(),
+				AppServiceSqlStorage.T_MESSAGE, message.getId());
 
-		mRestCache.insertIntoCache( contentValues );
+		mRestCache.insertIntoCache(contentValues);
 	}
 
 	// TODO: Fix deprecated call to RestCache
 	@SuppressWarnings("deprecation")
-	public void update( RestCacheItem item ) {
-		mRestCache.insertIntoCache( item.toContentValues() );
+	public void update(RestCacheItem item) {
+		mRestCache.insertIntoCache(item.toContentValues());
 	}
-	
-	
+
 	// TODO wrong place for timeout specific code
-	
+
 	public boolean checkSensors() {
-		throw new RuntimeException( "Not implemented in version 1" );
+		throw new RuntimeException("Not implemented in version 1");
 	}
-	
+
 	public boolean startTimeout() {
-		throw new RuntimeException( "Not implemented in version 1" );
+		throw new RuntimeException("Not implemented in version 1");
 	}
-	
+
 	public String checkTimeout() {
-		throw new RuntimeException( "Not implemented in version 1" );
+		throw new RuntimeException("Not implemented in version 1");
 	}
-	
-	public boolean postNote( String note ) {
-		throw new RuntimeException( "Not implemented in version 1" );
+
+	public boolean postNote(String note) {
+		throw new RuntimeException("Not implemented in version 1");
 	}
-	
-	public boolean postAffect( double pleasure, double arousal, double dominance ) {
-		throw new RuntimeException( "Not implemented in version 1" );
+
+	public boolean postAffect(double pleasure, double arousal, double dominance) {
+		throw new RuntimeException("Not implemented in version 1");
 	}
-	
-	
-	
+
 }

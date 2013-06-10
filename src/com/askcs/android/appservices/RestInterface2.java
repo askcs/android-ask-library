@@ -103,6 +103,7 @@ public class RestInterface2 extends RestInterface {
 		try {
 			do {
 				tries++;
+				Log.i(TAG, "Starting timeout, tries=" + tries );
 				url = new URL( mHost + "/timeout/start" ); // TODO wrong place for appspecific prefix
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setReadTimeout( 30000 /* milliseconds */);

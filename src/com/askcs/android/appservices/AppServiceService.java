@@ -73,7 +73,7 @@ public class AppServiceService extends IntentService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mRestInterface = RestInterface.getInstance(this);
+		mRestInterface = RestInterface.getInstance(getApplicationContext());
 	};
 
 	/**

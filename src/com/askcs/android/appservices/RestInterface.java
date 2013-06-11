@@ -142,9 +142,9 @@ public class RestInterface {
 			// editor.putString( Prefs.EMAIL, "" );
 			// editor.putString( Prefs.PASSWORD, "" );
 			editor.remove(Prefs.SESSION_ID);
+			editor.commit();
 			Log.i(TAG, "after session id " + prefs.contains(Prefs.SESSION_ID));
 
-			editor.commit();
 
 			// register for GCM messages
 			GcmManager gcmManager = new GcmManager(mContext);

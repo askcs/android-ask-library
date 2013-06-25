@@ -9,22 +9,18 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
-public class JsonMap
-extends LinkedHashMap<String, String> {
-	
-	static public TreeNode parse( String string ) throws JsonParseException, IOException {
-		JsonFactory factory = new JsonFactory();
-		JsonParser parser = factory.createParser( string );
-		ObjectMapper mapper = new ObjectMapper();
-		TreeNode tree = mapper.readTree( parser );
-		return tree;
-	}
-	
-	private JsonMap() {
-	}
-	
-	
-	
-	
+public class JsonMap extends LinkedHashMap<String, String> {
+  
+  static public TreeNode parse( String string ) throws JsonParseException,
+      IOException {
+    JsonFactory factory = new JsonFactory();
+    JsonParser parser = factory.createParser( string );
+    ObjectMapper mapper = new ObjectMapper();
+    TreeNode tree = mapper.readTree( parser );
+    return tree;
+  }
+  
+  private JsonMap() {
+  }
+  
 }

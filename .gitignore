@@ -17,3 +17,11 @@
 # generated files
 bin/
 gen/
+
+# Android Studio stuff
+*.iml
+.idea/
+
+# Gradle build
+build/
+

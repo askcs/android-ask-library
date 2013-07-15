@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.5+'
+    }
+}
+apply plugin: 'android-library'
+
+repositories {
+    // required for getting the android-support-library from maven
+    mavenCentral()
+}
+dependencies {
+    // get android-support-library from maven to prevent including it more than once
+    compile 'com.android.support:support-v4:13.0.0'
+    // only load the jackson lib and skip the android-support-library.jar
+    compile files('libs/jackson-2.2.0-custom.jar')
+    compile project(':libraries:ActionBarSherlock:actionbarsherlock')
+    compile project(':libraries:sense-android-library:sense-android-library')
+}
+
+android {
+    compileSdkVersion 17
+    buildToolsVersion "17.0.0"
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+
+        instrumentTest.setRoot('tests')
+    }
+}

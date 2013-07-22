@@ -19,3 +19,10 @@ bin/
 gen/
 
 target/
+# Android Studio stuff
+*.iml
+.idea/
+
+# Gradle build
+build/
+

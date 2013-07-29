@@ -1,12 +1,13 @@
 package com.askcs.android.sherlock;
 
+import android.support.v4.app.DialogFragment;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
 
-public class DialogFragment extends SherlockDialogFragment {
+public class AskDialogFragment extends DialogFragment {
   
   static public enum Dismiss {
     POSITIVE, NEUTRAL, NEGATIVE
@@ -14,13 +15,13 @@ public class DialogFragment extends SherlockDialogFragment {
   
   static public interface DialogListener {
     
-    public void onPositive( DialogFragment dialog,
+    public void onPositive( AskDialogFragment dialog,
         Map<String, ? extends Object> data );
     
-    public void onNegative( DialogFragment dialog,
+    public void onNegative( AskDialogFragment dialog,
         Map<String, ? extends Object> data );
     
-    public void onNeutral( DialogFragment dialog,
+    public void onNeutral( AskDialogFragment dialog,
         Map<String, ? extends Object> data );
   }
   

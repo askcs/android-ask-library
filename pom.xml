@@ -14,23 +14,38 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <java.version>1.6</java.version>
-    <android.platform>16</android.platform>
+    <android.platform>18</android.platform>
 </properties>
 
   <dependencies>
 
     <dependency>
-      <groupId>com.google.android</groupId>
+      <groupId>android</groupId>
       <artifactId>android</artifactId>
       <scope>provided</scope>
-	<version>4.1.1.4</version>
+	<version>4.3_r1</version>
     </dependency>
-<dependency>
+
+	<dependency>
             <groupId>android.support</groupId>
-            <artifactId>compatibility-v13</artifactId>
+            <artifactId>compatibility-v4</artifactId>
             <version>18</version>
         </dependency>                    
         
+	<dependency>
+	    <groupId>android.support</groupId>
+	    <artifactId>compatibility-v7-appcompat</artifactId>
+      	    <version>18</version>
+      	    <type>apklib</type>
+	</dependency>
+
+	<dependency>
+	   <groupId>android.support</groupId>
+	   <artifactId>compatibility-v7-appcompat</artifactId>
+	   <version>18</version>
+	   <type>jar</type>
+	</dependency>
+
         <dependency>
             <groupId>com.google.android.gcm</groupId>
             <artifactId>gcm-client</artifactId>
@@ -73,7 +88,7 @@
           <resourceDirectory>${project.basedir}/res</resourceDirectory>
           <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
           <sdk>
-            <platform>16</platform>
+            <platform>18</platform>
           </sdk>
           <undeployBeforeDeploy>true</undeployBeforeDeploy>
         </configuration>
@@ -88,6 +103,41 @@
           <target>1.6</target>
         </configuration>
       </plugin>
+
+    <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <configuration>
+          <executable>mvn</executable>
+          <arguments>
+            <argument>clean</argument>
+            <argument>install</argument>
+            <argument>android:deploy</argument>
+            <argument>android:run</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0-alpha-2</version>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <files>
+                <file>local.properties</file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 </project>

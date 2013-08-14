@@ -1,4 +1,13 @@
-You'll need to add libs/jackson-2.2.0-custom.jar to your local MVN repo:
+Usage:
 
-mvn install:install-file -Dfile=libs/jackson-2.2.0-custom.jar -DgroupId=com.fasterxml -DartifactId=jackson -Dversion=1 -Dpackaging=jar
+`mvn install`
 
+Then you you should be able include the library from your own project's pom.xml as follows
+```
+    <dependency>
+        <groupId>com.askcs.android</groupId>
+        <artifactId>android-ask-library</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <type>apklib</type>
+    </dependency>
+```

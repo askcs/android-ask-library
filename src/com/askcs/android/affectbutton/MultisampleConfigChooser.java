@@ -8,7 +8,8 @@ import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 public class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser {
-  static private final String kTag = "GDC11";
+  
+  static private final String TAG = MultisampleConfigChooser.class.getCanonicalName();
   
   @Override
   public EGLConfig chooseConfig( EGL10 egl, EGLDisplay display ) {
@@ -25,7 +26,8 @@ public class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser 
         EGL10.EGL_NONE };
     
     if ( !egl.eglChooseConfig( display, configSpec, null, 0, mValue ) ) {
-      throw new IllegalArgumentException( "eglChooseConfig failed" );
+      Log.e( TAG, "1st eglChooseConfig failed" );
+      mValue[ 0 ] = 0;
     }
     int numConfigs = mValue[ 0 ];
     
@@ -45,7 +47,8 @@ public class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser 
           EGL10.EGL_NONE };
       
       if ( !egl.eglChooseConfig( display, configSpec, null, 0, mValue ) ) {
-        throw new IllegalArgumentException( "2nd eglChooseConfig failed" );
+    	  Log.e( TAG, "2nd eglChooseConfig failed" );
+          mValue[ 0 ] = 0;
       }
       numConfigs = mValue[ 0 ];
       
@@ -57,7 +60,8 @@ public class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser 
             4 /* EGL_OPENGL_ES2_BIT */, EGL10.EGL_NONE };
         
         if ( !egl.eglChooseConfig( display, configSpec, null, 0, mValue ) ) {
-          throw new IllegalArgumentException( "3rd eglChooseConfig failed" );
+        	Log.e( TAG, "3rd eglChooseConfig failed" );
+            mValue[ 0 ] = 0;
         }
         numConfigs = mValue[ 0 ];
         
@@ -111,7 +115,7 @@ public class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser 
     }
     
     if ( index == -1 ) {
-      Log.w( kTag, "Did not find sane config, using first" );
+      Log.w( TAG, "Did not find sane config, using first" );
       index = 0;
     }
     

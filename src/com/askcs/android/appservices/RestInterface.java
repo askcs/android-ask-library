@@ -176,6 +176,7 @@ public class RestInterface {
       // Invalid Credentials
       return Errors.ERROR_BADCREDENTIALS;
     }
+    email = email.replace( "+", "%2B" );
     password = Digest.hashPassword( password );
     try {
       String xSession;
